@@ -1,0 +1,54 @@
+{
+    "name": "@azteam/express-middleware",
+    "version": "1.0.1",
+    "description": "",
+    "main": "lib/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/toda93/express-middleware.git"
+    },
+    "engines": {
+        "node": ">= 10.0.0",
+        "npm": "^6.0.0"
+    },
+    "keywords": [
+        "toda",
+        "nodejs",
+        "express middleware"
+    ],
+    "author": "toda <sp.azsolution.net@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/toda93/express-middleware/issues"
+    },
+    "homepage": "https://github.com/toda93/express-middleware#readme",
+    "dependencies": {
+        "@azteam/crypto": "^1.0.6",
+        "@azteam/error": "^1.0.0",
+        "etag": "^1.8.1"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.7.5",
+        "@babel/core": "^7.7.5",
+        "@babel/plugin-transform-async-to-generator": "^7.7.4",
+        "@babel/preset-env": "^7.7.6",
+        "@babel/runtime": "^7.7.5"
+    },
+    "babel": {
+        "presets": [
+            [
+                "@babel/preset-env",
+                {
+                    "targets": {
+                        "node": "current"
+                    }
+                }
+            ]
+        ]
+    },
+    "scripts": {
+        "pretest": "babel src --out-dir lib",
+        "test": "node lib/test.js",
+        "prepublish": "babel src --out-dir lib"
+    }
+}
