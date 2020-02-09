@@ -7,6 +7,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import logger from 'morgan';
 import _ from 'lodash';
+import 'express-async-errors';
+
 import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 async function bindingController(app, controllerPaths) {
@@ -116,9 +118,6 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
         throw new ErrorException(NOT_FOUND);
     });
 
-
-    console.log('httpErrorHandler');
-    
     app.use(httpErrorHandler);
 
     const server = http.Server(app);
