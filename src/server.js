@@ -40,7 +40,7 @@ async function bindingController(app, controllerPaths) {
 
 export async function startServer(controllerPaths, whiteList = [], appVariable = {
     SECRET_KEY: 'SECRET_KEY'
-}) {
+}, callback = null) {
     const app = express();
     app.use(helmet());
 
@@ -108,19 +108,34 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     await bindingController(app, controllerPaths);
 
+    app.all('/', async (req, res) => {
+        return res.success('welcome');
+    });
+
     app.use((req, res) => {
         throw new ErrorException(NOT_FOUND);
     });
 
+
+    console.log('httpErrorHandler');
+    
     app.use(httpErrorHandler);
 
     const server = http.Server(app);
 
     server.on('listening', () => {
+
+        if(typeof callback === 'function'){
+            callback('start');
+        }
         console.info(`Server ${process.env.SERVICE} start at http://localhost:${server.address().port}`);
     });
 
     server.on('error', (error) => {
+        if(typeof callback === 'function'){
+            callback('error');
+        }
+
         if (error.syscall !== 'listen') {
             throw error;
         }
