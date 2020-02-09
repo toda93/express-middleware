@@ -10,4 +10,5 @@ export default (req, res, next) => {
         }
         res.setHeader('ETag', etag_hash);
     }
+     return next();
 };
