@@ -106,15 +106,13 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
         next();
     });
 
+    await bindingController(app, controllerPaths);
 
     app.use((req, res) => {
         throw new ErrorException(NOT_FOUND);
     });
 
     app.use(httpErrorHandler);
-
-    await bindingController(app, controllerPaths);
-
 
     const server = http.Server(app);
 
