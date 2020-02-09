@@ -1,6 +1,6 @@
 {
     "name": "@azteam/express",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "",
     "main": "lib/index.js",
     "repository": {
@@ -23,8 +23,8 @@
     },
     "homepage": "https://github.com/toda93/express#readme",
     "dependencies": {
-        "@azteam/crypto": "^1.0.6",
-        "@azteam/error": "^1.0.0",
+        "@azteam/crypto": "1.0.6",
+        "@azteam/error": "1.0.0",
         "body-parser": "~1.19.0",
         "cookie-parser": "^1.4.4",
         "cors": "~2.8.4",
