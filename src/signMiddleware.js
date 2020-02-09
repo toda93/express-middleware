@@ -3,10 +3,6 @@ import {ErrorException, SIGNATURE_FAILED} from '@azteam/error';
 import etag from 'etag';
 
 export default (req, res, next) => {
-    return next();
-    if (process.env.NODE_ENV === 'development') {
-        return next();
-    }
     if (req.query.sign) {
         if (req.method === 'GET') {
             const etag_hash = etag(req.url);
