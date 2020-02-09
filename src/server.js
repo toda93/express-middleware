@@ -7,14 +7,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import logger from 'morgan';
 import _ from 'lodash';
-import {ErrorException, httpErrorHandler, NOT_FOUND} from '@azteam/error';
+import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 async function bindingController(app, controllerPaths) {
     const msg = [];
 
     await _.map(controllerPaths, async (controllerPath) => {
 
-        const {controller, name} = require(controllerPath);
+        const { controller, name } = require(controllerPath);
 
         await _.map(controller, async (item, key) => {
             msg.push({
@@ -25,7 +25,7 @@ async function bindingController(app, controllerPaths) {
                 type: item.type.toUpperCase()
             });
 
-            if(name !== 'index'){
+            if (name !== 'index') {
                 await app[item.type.toLowerCase()](`/${name}${item.path}`, ...item.method);
             } else {
                 await app[item.type.toLowerCase()](`/${item.path}`, ...item.method);
@@ -45,7 +45,7 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
     app.use(helmet());
 
     app.use(methodOverride());
-    app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
+    app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
     app.use(bodyParser.json({}));
 
     app.set('trust proxy', 1);
@@ -76,8 +76,8 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-    app.use(async function (req, res, next) {
-        res.success = function (data, guard = []) {
+    app.use(async function(req, res, next) {
+        res.success = function(data, guard = []) {
             if (!_.isEmpty(guard) && false) {
                 if (_.isArray(data)) {
                     data = _.map(data, object =>
@@ -106,13 +106,15 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
         next();
     });
 
-    await bindingController(app, controllerPaths);
 
     app.use((req, res) => {
         throw new ErrorException(NOT_FOUND);
     });
 
     app.use(httpErrorHandler);
+
+    await bindingController(app, controllerPaths);
+
 
     const server = http.Server(app);
 
@@ -125,9 +127,9 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
             throw error;
         }
 
-        let bind = typeof process.env.APP_PORT === 'string'
-            ? 'Pipe ' + process.env.APP_PORT
-            : 'Port ' + process.env.APP_PORT;
+        let bind = typeof process.env.APP_PORT === 'string' ?
+            'Pipe ' + process.env.APP_PORT :
+            'Port ' + process.env.APP_PORT;
 
         // handle specific listen errors with friendly messages
         switch (error.code) {
@@ -146,6 +148,3 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     server.listen(process.env.APP_PORT);
 }
-
-
-
