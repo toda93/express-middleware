@@ -80,29 +80,14 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     app.use(async function(req, res, next) {
         res.success = function(data, guard = []) {
-            if (!_.isEmpty(guard) && false) {
-                if (_.isArray(data)) {
-                    data = _.map(data, object =>
-                        _.omit(object, guard)
-                    );
-                } else {
-                    if (data.rows) {
-                        data.rows = _.map(data.rows, object =>
-                            _.omit(object, guard)
-                        );
-                    } else {
-                        if (_.isFunction(data.toJSON)) {
-                            data = data.toJSON();
-                        }
-                        data = _.omit(data, guard);
-                    }
-                }
+            if (!_.isEmpty(guard) && _.isObject(data)) {
+                data = _.map(data, object =>
+                    _.omit(object, guard)
+                );
             }
-
             return res.json({
                 success: true,
-                data,
-                options: req.filter_options,
+                data
             });
         };
         next();
