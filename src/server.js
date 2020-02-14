@@ -79,12 +79,23 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
     app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
     app.use(async function(req, res, next) {
-        res.success = function(data, guard = []) {
-            if (!_.isEmpty(guard) && _.isObject(data)) {
-                data = _.map(data, object =>
-                    _.omit(object, guard)
-                );
+        res.success = function (data, guard = []) {
+            if (!_.isEmpty(guard)) {
+                if (_.isArray(data)) {
+                    data = _.map(data, object => {
+                        if (object.toJSON) {
+                            object = object.toJSON();
+                        }
+                        return _.omit(object, guard);
+                    });
+                } else if (_.isObject(data)) {
+                    if (data.toJSON) {
+                        data = data.toJSON();
+                    }
+                    data = _.omit(data, guard);
+                }
             }
+
             return res.json({
                 success: true,
                 data
