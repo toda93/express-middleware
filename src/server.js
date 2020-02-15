@@ -14,11 +14,11 @@ import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 async function bindingController(app, controllerPaths) {
     const msg = [];
 
-    await _.map(controllerPaths, async (controllerPath) => {
+    _.map(controllerPaths, async (controllerPath) => {
 
         const { controller, name } = require(controllerPath);
 
-        await _.map(controller, async (item, key) => {
+        _.map(controller, async (item, key) => {
             msg.push({
                 service: process.env.SERVICE,
                 controller: name,
@@ -28,9 +28,9 @@ async function bindingController(app, controllerPaths) {
             });
 
             if (name !== 'index') {
-                await app[item.type.toLowerCase()](`/${name}${item.path}`, ...item.method);
+                app[item.type.toLowerCase()](`/${name}${item.path}`, ...item.method);
             } else {
-                await app[item.type.toLowerCase()](`/${item.path}`, ...item.method);
+                app[item.type.toLowerCase()](`/${item.path}`, ...item.method);
             }
 
         });
@@ -79,7 +79,7 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
     app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
     app.use(async function(req, res, next) {
-        res.success = function (data, guard = []) {
+        res.success = function(data, guard = []) {
             if (!_.isEmpty(guard)) {
                 if (_.isArray(data)) {
                     data = _.map(data, object => {
@@ -120,14 +120,14 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     server.on('listening', () => {
 
-        if(typeof callback === 'function'){
+        if (typeof callback === 'function') {
             callback('start');
         }
         console.info(`Server ${process.env.SERVICE} start at http://localhost:${server.address().port}`);
     });
 
     server.on('error', (error) => {
-        if(typeof callback === 'function'){
+        if (typeof callback === 'function') {
             callback('error');
         }
 
