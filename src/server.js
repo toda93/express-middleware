@@ -39,18 +39,15 @@ async function bindingController(app, controllerPaths) {
 
 }
 
-export async function startServer(configs, callback = null) {
-
-    configs = {
-        port: 4001,
-        controllerPaths: [],
-        whiteList: [],
-        appVariables: {
-            SECRET_KEY: 'SECRET_KEY'
-        },
-        ...configs,
-    }
-
+export async function startServer(
+    port = 3000,
+    controllerPaths = [],
+    whiteList = [],
+    appVariables = {
+        SECRET_KEY: 'SECRET_KEY'
+    },
+    callback = null
+) {
 
     const app = express();
     app.use(helmet());
@@ -61,17 +58,17 @@ export async function startServer(configs, callback = null) {
 
     app.set('trust proxy', 1);
 
-    _.map(configs.appVariables, (value, key) => {
+    _.map(appVariables, (value, key) => {
         app.set(key, value);
     });
 
-    app.use(cookieParser(configs.appVariables.SECRET_KEY));
+    app.use(cookieParser(appVariables.SECRET_KEY));
     app.use(cors({
         credentials: true,
         origin: (origin, callback) => {
             if (!origin ||
                 origin.includes('localhost') ||
-                configs.whiteList.some(re => origin.match(re))) {
+                whiteList.some(re => origin.match(re))) {
                 callback(null, true)
             } else {
                 callback(null, false)
@@ -113,7 +110,7 @@ export async function startServer(configs, callback = null) {
         next();
     });
 
-    await bindingController(app, configs.controllerPaths);
+    await bindingController(app, controllerPaths);
 
     app.all('/', async (req, res) => {
         return res.success('welcome');
@@ -132,29 +129,31 @@ export async function startServer(configs, callback = null) {
         if (typeof callback === 'function') {
             callback('start');
         }
-        console.info(`Server ${process.env.SERVICE} start at http://localhost:${server.address().port}`);
+        console.info(`Server start at http://localhost:${server.address().port}`);
     });
 
     server.on('error', (error) => {
         if (typeof callback === 'function') {
-            callback('error');
+            callback('error', error);
         }
 
         if (error.syscall !== 'listen') {
             throw error;
         }
 
-        let bind = typeof configs.port === 'string' ?
-            'Pipe ' + configs.port :
-            'Port ' + configs.port;
+        let bind = typeof port === 'string' ?
+            'Pipe ' + port :
+            'Port ' + port;
 
         // handle specific listen errors with friendly messages
         switch (error.code) {
             case 'EACCES':
+                callback('error', bind + ' requires elevated privileges');
                 console.error(bind + ' requires elevated privileges');
                 process.exit(1);
                 break;
             case 'EADDRINUSE':
+                callback('error', bind + ' is already in use');
                 console.error(bind + ' is already in use');
                 process.exit(1);
                 break;
@@ -163,5 +162,5 @@ export async function startServer(configs, callback = null) {
         }
     });
 
-    server.listen(configs.port);
+    server.listen(port);
 }
