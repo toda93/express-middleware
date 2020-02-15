@@ -44,10 +44,10 @@ export async function startServer(configs, callback = null) {
     configs = {
         port: 4001,
         controllerPaths: [],
-        whiteList: []
+        whiteList: [],
         appVariables: {
             SECRET_KEY: 'SECRET_KEY'
-        }
+        },
         ...configs,
     }
 
