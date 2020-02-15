@@ -45,7 +45,7 @@ export async function startServer(configs, callback = null) {
         port: 4001,
         controllerPaths: [],
         whiteList: []
-        appVariable: {
+        appVariables: {
             SECRET_KEY: 'SECRET_KEY'
         }
         ...configs,
@@ -61,11 +61,11 @@ export async function startServer(configs, callback = null) {
 
     app.set('trust proxy', 1);
 
-    _.map(configs.appVariable, (value, key) => {
+    _.map(configs.appVariables, (value, key) => {
         app.set(key, value);
     });
 
-    app.use(cookieParser(configs.appVariable.SECRET_KEY));
+    app.use(cookieParser(configs.appVariables.SECRET_KEY));
     app.use(cors({
         credentials: true,
         origin: (origin, callback) => {
