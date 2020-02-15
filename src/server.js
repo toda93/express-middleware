@@ -20,7 +20,6 @@ async function bindingController(app, controllerPaths) {
 
         _.map(controller, async (item, key) => {
             msg.push({
-                service: process.env.SERVICE,
                 controller: name,
                 method: key,
                 path: item.path,
@@ -40,9 +39,19 @@ async function bindingController(app, controllerPaths) {
 
 }
 
-export async function startServer(controllerPaths, whiteList = [], appVariable = {
-    SECRET_KEY: 'SECRET_KEY'
-}, callback = null) {
+export async function startServer(configs, callback = null) {
+
+    configs = {
+        port: 4001,
+        controllerPaths: [],
+        whiteList: []
+        appVariable: {
+            SECRET_KEY: 'SECRET_KEY'
+        }
+        ...configs,
+    }
+
+
     const app = express();
     app.use(helmet());
 
@@ -52,17 +61,17 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
 
     app.set('trust proxy', 1);
 
-    _.map(appVariable, (value, key) => {
+    _.map(configs.appVariable, (value, key) => {
         app.set(key, value);
     });
 
-    app.use(cookieParser(appVariable.SECRET_KEY));
+    app.use(cookieParser(configs.appVariable.SECRET_KEY));
     app.use(cors({
         credentials: true,
         origin: (origin, callback) => {
             if (!origin ||
                 origin.includes('localhost') ||
-                whiteList.some(re => origin.match(re))) {
+                configs.whiteList.some(re => origin.match(re))) {
                 callback(null, true)
             } else {
                 callback(null, false)
@@ -104,7 +113,7 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
         next();
     });
 
-    await bindingController(app, controllerPaths);
+    await bindingController(app, configs.controllerPaths);
 
     app.all('/', async (req, res) => {
         return res.success('welcome');
@@ -135,9 +144,9 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
             throw error;
         }
 
-        let bind = typeof process.env.APP_PORT === 'string' ?
-            'Pipe ' + process.env.APP_PORT :
-            'Port ' + process.env.APP_PORT;
+        let bind = typeof configs.port === 'string' ?
+            'Pipe ' + configs.port :
+            'Port ' + configs.port;
 
         // handle specific listen errors with friendly messages
         switch (error.code) {
@@ -154,5 +163,5 @@ export async function startServer(controllerPaths, whiteList = [], appVariable =
         }
     });
 
-    server.listen(process.env.APP_PORT);
+    server.listen(configs.port);
 }
