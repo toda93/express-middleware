@@ -1,3 +1,5 @@
+import path from 'path';
+
 import http from 'http';
 import express from 'express';
 import helmet from 'helmet';
@@ -14,17 +16,16 @@ import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 async function bindingController(app, controllerPaths) {
     const msg = [];
     _.map(controllerPaths, async (controllerPath) => {
-        const { controller, name } = require(controllerPath);
+        const { controller } = require(controllerPath);
         _.map(controller, async (item, key) => {
-            path = `/${item.path}`;
 
             msg.push({
-                controller: name,
+                controller: path.basename(controllerPath),
                 method: key,
                 path: item.path,
                 type: item.type.toUpperCase()
             });
-            app[item.type.toLowerCase()](path, ...item.method);
+            app[item.type.toLowerCase()](item.path, ...item.method);
         });
     });
     console.table(msg);
