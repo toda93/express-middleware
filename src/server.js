@@ -20,7 +20,7 @@ async function bindingController(app, controllerPaths) {
         _.map(controller, async (item, key) => {
 
             msg.push({
-                controller: path.basename(controllerPath),
+                controller: path.basename(controllerPath, '.controller.js'),
                 method: key,
                 path: item.path,
                 type: item.type.toUpperCase()
