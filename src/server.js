@@ -13,30 +13,21 @@ import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 async function bindingController(app, controllerPaths) {
     const msg = [];
-
     _.map(controllerPaths, async (controllerPath) => {
-
         const { controller, name } = require(controllerPath);
-
         _.map(controller, async (item, key) => {
+            path = `/${item.path}`;
+
             msg.push({
                 controller: name,
                 method: key,
                 path: item.path,
                 type: item.type.toUpperCase()
             });
-
-            if (name !== 'index') {
-                app[item.type.toLowerCase()](`/${name}${item.path}`, ...item.method);
-            } else {
-                app[item.type.toLowerCase()](`/${item.path}`, ...item.method);
-            }
-
+            app[item.type.toLowerCase()](path, ...item.method);
         });
     });
-
     console.table(msg);
-
 }
 
 export async function startServer(
