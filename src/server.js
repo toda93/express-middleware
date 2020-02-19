@@ -23,7 +23,7 @@ async function bindingController(app, controllerPaths) {
                 controller: path.basename(controllerPath, '.controller.js'),
                 method: key,
                 path: item.path,
-                type: item.type.toUpperCase()
+                type: item.type
             });
             app[item.type.toLowerCase()](item.path, ...item.method);
         });
