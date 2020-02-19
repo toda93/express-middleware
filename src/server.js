@@ -86,6 +86,17 @@ export async function startServer(
 
     app.use(async function(req, res, next) {
         res.success = function(data, guard = []) {
+
+            if (Array.isArray(guard)) {
+                guard = [
+                    ...guard,
+                    '_id',
+                    '__v',
+                ];
+            } else {
+                guard = [];
+            }
+
             if (!_.isEmpty(guard)) {
                 if (_.isArray(data)) {
                     data = _.map(data, object => {
