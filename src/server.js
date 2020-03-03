@@ -13,15 +13,13 @@ import 'express-async-errors';
 
 import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
-async function bindingController(app, controllerPaths) {
+async function bindingController(app, controllers) {
     const msg = [];
-    _.map(controllerPaths, async (controllerPath) => {
-        const { controller } = require(controllerPath);
+    _.map(controllers, async (controller, name) => {
         _.map(controller, async (item, key) => {
-
             msg.push({
+                controller: name,
                 type: item.type,
-                controller: path.basename(path.dirname(controllerPath)),
                 method: key,
                 path: item.path,
             });
