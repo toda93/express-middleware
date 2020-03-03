@@ -21,7 +21,7 @@ async function bindingController(app, controllerPaths) {
 
             msg.push({
                 type: item.type,
-                controller: path.basename(controllerPath, '.controller.js'),
+                controller: path.basename(path.dirname(controllerPath)),
                 method: key,
                 path: item.path,
             });
