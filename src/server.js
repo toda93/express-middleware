@@ -31,7 +31,7 @@ async function bindingController(app, controllers) {
 
 export async function startServer(
     port = 3000,
-    controllerPaths = [],
+    controllers = {},
     whiteList = [],
     appVariables = {
         SECRET_KEY: 'SECRET_KEY'
@@ -111,7 +111,7 @@ export async function startServer(
         next();
     });
 
-    await bindingController(app, controllerPaths);
+    await bindingController(app, controllers);
 
     app.all('/', async (req, res) => {
         return res.success('welcome');
