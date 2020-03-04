@@ -15,7 +15,7 @@ import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 
 class ApiServer {
-    contructor(secretKey) {
+    constructor(secretKey) {
         this.secretKey = secretKey;
         this.controllers = {};
         this.whiteList = [];
