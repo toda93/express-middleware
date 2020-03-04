@@ -29,8 +29,8 @@ class ApiServer {
         this.debug = debug;
         return this;
     }
-    addController(controller) {
-        this.controllers['name'] = controller;
+    addController(name, controller) {
+        this.controllers[name] = controller;
         return this;
     }
 
