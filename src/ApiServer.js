@@ -140,7 +140,7 @@ class ApiServer {
             const server = http.Server(app);
 
             server.on('listening', () => {
-                console.info(`Server start at http://localhost:${server.address().port}`);
+                this._alert('listening', `Server start at http://localhost:${server.address().port}`);
             });
 
             server.on('error', (error) => {
@@ -154,11 +154,11 @@ class ApiServer {
 
                 switch (error.code) {
                     case 'EACCES':
-                        console.error(bind + ' requires elevated privileges');
+                        this._alert('EACCES', `${bind} requires elevated privileges`);
                         process.exit(1);
                         break;
                     case 'EADDRINUSE':
-                        console.error(bind + ' is already in use');
+                        this._alert('EACCES', `${bind} is already in use`);
                         process.exit(1);
                         break;
                     default:
@@ -170,6 +170,18 @@ class ApiServer {
 
         } else {
             throw Error('No controllers in use');
+        }
+    }
+
+    setAlertCallback(callback) {
+        this.alertCallback = callback;
+    }
+
+    _alert(status, msg) {
+        if (typeof this.alertCallback === 'function') {
+            this.alertCallback(status, msg);
+        } else {
+            console.log(status, msg);
         }
     }
 }
