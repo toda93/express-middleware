@@ -168,9 +168,12 @@ class ApiServer {
 
             server.listen(port);
 
+            return server;
+
         } else {
             throw Error('No controllers in use');
         }
+        return null;
     }
 
     setAlertCallback(callback) {
