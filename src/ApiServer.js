@@ -51,18 +51,25 @@ class ApiServer {
             // });
 
             app.use(cookieParser(this.secretKey));
-            app.use(cors({
-                credentials: true,
-                origin: (origin, callback) => {
-                    if (!origin ||
-                        origin.includes('localhost') ||
-                        whiteList.some(re => origin.match(re))) {
-                        callback(null, true)
-                    } else {
-                        callback(null, false)
-                    }
-                },
-            }));
+
+
+            if (this.whiteList) {
+                const whiteList = this.whiteList;
+                app.use(cors({
+                    credentials: true,
+                    origin: (origin, callback) => {
+                        if (!origin ||
+                            origin.includes('localhost') ||
+                            whiteList.some(re => origin.match(re))) {
+                            callback(null, true)
+                        } else {
+                            callback(null, false)
+                        }
+                    },
+                }));
+            }
+
+
 
             if (this.debug) {
                 app.use(logger('dev'));
