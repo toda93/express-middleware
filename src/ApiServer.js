@@ -20,6 +20,7 @@ class ApiServer {
         this.controllers = {};
         this.whiteList = [];
         this.debug = false;
+        this.countConnected = 0;
     }
     setWhiteList(whiteList) {
         this.whiteList = whiteList;
@@ -77,6 +78,13 @@ class ApiServer {
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
             app.use(async function(req, res, next) {
+                this.countConnected++;
+                res.on('finish', function() {
+                    this.countConnected--;
+                }).on('close', function() {
+                    this.countConnected--;
+                });
+
                 res.success = function(data, guard = []) {
 
                     if (Array.isArray(guard)) {
@@ -140,6 +148,7 @@ class ApiServer {
             const server = http.Server(app);
 
             server.on('listening', () => {
+                this.countConnected = 0;
                 this._alert('listening', `Server start at http://localhost:${server.address().port}`);
             });
 
