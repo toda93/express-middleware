@@ -75,7 +75,7 @@ class ApiServer {
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
             app.use(async function(req, res, next) {
-            
+
                 res.success = function(data, guard = []) {
 
                     if (Array.isArray(guard)) {
@@ -100,7 +100,12 @@ class ApiServer {
                             if (data.toJSON) {
                                 data = data.toJSON();
                             }
-                            data = _.omit(data, guard);
+                            if (data.docs) {
+                                data.docs = _.omit(data.docs, guard);
+                            } else {
+                                data = _.omit(data, guard);
+
+                            }
                         }
                     }
 
