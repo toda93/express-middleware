@@ -5,6 +5,9 @@ class ServiceRegister {
     getService(name){
         return this.services[name];
     }
+    async waitRegister(type){
+
+    }
 }
 export default ServiceRegister;
 
