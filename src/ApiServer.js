@@ -1,5 +1,4 @@
 import path from 'path';
-
 import http from 'http';
 import express from 'express';
 import helmet from 'helmet';
@@ -7,9 +6,9 @@ import methodOverride from 'method-override';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import logger from 'morgan';
 import _ from 'lodash';
 import 'express-async-errors';
+const morgan = require('morgan');
 
 import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
@@ -70,7 +69,7 @@ class ApiServer {
             }
 
             if (this.debug) {
-                app.use(logger('dev'));
+                app.use(morgan('dev'));
             }
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
