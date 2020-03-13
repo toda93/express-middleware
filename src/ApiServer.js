@@ -75,9 +75,9 @@ class ApiServer {
 
             app.use(async function(req, res, next) {
 
-                res.success = function(data, guard = []) {
+                res.success = function(data, guard = [], force = false) {
 
-                    if (Array.isArray(guard)) {
+                    if (Array.isArray(guard) && !force) {
                         guard = [
                             ...guard,
                             '__v',
