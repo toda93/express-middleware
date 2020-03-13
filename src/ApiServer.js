@@ -80,7 +80,6 @@ class ApiServer {
                     if (Array.isArray(guard) && !force) {
                         guard = [
                             ...guard,
-                            '_id'
                             '__v',
                             'updated_at',
                             'created_at',
