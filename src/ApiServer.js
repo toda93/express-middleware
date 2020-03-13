@@ -83,10 +83,7 @@ class ApiServer {
                             '_id',
                             '__v',
                         ];
-                    } else {
-                        guard = [];
-                    }
-
+                    } 
                     if (!_.isEmpty(guard)) {
                         if (_.isArray(data)) {
                             data = _.map(data, object => {
