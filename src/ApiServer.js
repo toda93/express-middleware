@@ -80,8 +80,12 @@ class ApiServer {
                     if (Array.isArray(guard)) {
                         guard = [
                             ...guard,
-                            '_id',
                             '__v',
+                            'updated_at',
+                            'created_at',
+                            'created_id',
+                            'modified_at',
+                            'modified_id',
                         ];
                     } 
                     if (!_.isEmpty(guard)) {
