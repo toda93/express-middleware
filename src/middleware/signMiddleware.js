@@ -1,6 +1,5 @@
 import { isValidSign } from '@azteam/crypto';
 import { ErrorException, SIGNATURE_FAILED } from '@azteam/error';
-import etag from 'etag';
 
 
 
