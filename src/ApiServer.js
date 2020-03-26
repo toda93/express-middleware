@@ -34,7 +34,7 @@ class ApiServer {
         return this;
     }
 
-    addControllersByPath(constrollersPath) {
+    addControllersByPath(controllersPath) {
         const controllerFiles = fs.readdirSync(controllersPath);
         for (const fileName of controllerFiles) {
             if (fileName.includes('controller.js')) {
