@@ -9,28 +9,41 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
+
 const morgan = require('morgan');
 
-import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
+import {ErrorException, httpErrorHandler, NOT_FOUND} from '@azteam/error';
 
 
 class ApiServer {
     constructor(secretKey) {
         this.secretKey = secretKey;
         this.controllers = {};
+        this.middlewares = [];
         this.whiteList = [];
         this.debug = false;
     }
+
     setWhiteList(whiteList) {
         this.whiteList = whiteList;
         return this;
     }
+
     setDebug(debug) {
         this.debug = debug;
         return this;
     }
+
     addController(name, controller) {
         this.controllers[name] = controller;
+        return this;
+    }
+
+    addMiddleware(controller, middleware) {
+        this.middlewares.push({
+            controller,
+            middleware
+        });
         return this;
     }
 
@@ -52,7 +65,7 @@ class ApiServer {
             app.use(helmet());
 
             app.use(methodOverride());
-            app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
+            app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
@@ -80,9 +93,9 @@ class ApiServer {
             }
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-            app.use(async function(req, res, next) {
+            app.use(async function (req, res, next) {
 
-                res.success = function(data, guard = [], force = false) {
+                res.success = function (data, guard = [], force = false) {
 
                     if (Array.isArray(guard) && !force) {
                         guard = [
@@ -133,7 +146,13 @@ class ApiServer {
                         method: key,
                         path: item.path,
                     });
-                    app[item.type.toLowerCase()](item.path, ...item.method);
+
+                    let middlewares = [];
+                    const mid = _.find(this.middlewares, (item) => item.controller === name || item.controller === '*');
+                    if (mid) {
+                        middlewares.push(mid.middleware);
+                    }
+                    app[item.type.toLowerCase()](item.path, ...middlewares, ...item.method);
                 });
             });
             console.table(msg);

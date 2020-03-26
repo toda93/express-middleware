@@ -24,7 +24,7 @@ async function getInfoByAPIToken(endpoint, token) {
 
 export default (refreshTokenEndpoint, checkAPITokenEndpoint) => {
     return async (req, res, next) => {
-        let token = req.signedCookies.access_token;
+        let token = req.headers.authorization || req.signedCookies.access_token;
 
         if (token && token.startsWith('Bearer ')) {
             token = token.replace('Bearer ', '');
