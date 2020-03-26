@@ -33,6 +33,17 @@ class ApiServer {
         return this;
     }
 
+    addControllersByPath(constrollersPath) {
+        const controllerFiles = fs.readdirSync(controllersPath);
+        for (const fileName of controllerFiles) {
+            if (fileName.includes('controller.js')) {
+                const controller = require(`${controllersPath}/${fileName}`).default;
+                this.addController(path.basename(fileName, '.controller.js'), controller);
+            }
+        }
+        return this;
+    }
+
     start(port) {
         if (!_.isEmpty(this.controllers)) {
 
@@ -44,10 +55,6 @@ class ApiServer {
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
-
-            // _.map(appVariables, (value, key) => {
-            //     app.set(key, value);
-            // });
 
             app.use(cookieParser(this.secretKey));
 
@@ -87,7 +94,7 @@ class ApiServer {
                             'modified_at',
                             'modified_id',
                         ];
-                    } 
+                    }
                     if (!_.isEmpty(guard)) {
                         if (_.isArray(data)) {
                             data = _.map(data, object => {
