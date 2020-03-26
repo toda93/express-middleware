@@ -66,7 +66,6 @@ class ApiServer {
                     credentials: true,
                     origin: (origin, callback) => {
                         if (!origin ||
-                            origin.includes('localhost') ||
                             whiteList.some(re => origin.match(re))) {
                             callback(null, true)
                         } else {
