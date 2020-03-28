@@ -26,6 +26,7 @@ class ApiServer {
 
     jwtSign(payload, mTTL = 15) {
         return jwt.sign({
+            ...payload,
             exp: Math.floor(Date.now() / 1000) + (60 * mTTL),
         }, process.env.SECRET_KEY);
     }
