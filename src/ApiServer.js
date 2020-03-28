@@ -102,6 +102,11 @@ class ApiServer {
             if (this.debug) {
                 app.use(morgan('dev'));
             }
+
+            app.get('/robots.txt', function(req, res) {
+                res.type('text/plain');
+                res.send("User-agent: *\nDisallow: /");
+            });
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
             app.use(async function(req, res, next) {
