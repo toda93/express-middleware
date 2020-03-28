@@ -12,7 +12,7 @@ import 'express-async-errors';
 
 const morgan = require('morgan');
 
-import {ErrorException, httpErrorHandler, NOT_FOUND} from '@azteam/error';
+import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 
 class ApiServer {
@@ -65,7 +65,7 @@ class ApiServer {
             app.use(helmet());
 
             app.use(methodOverride());
-            app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
+            app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
@@ -93,9 +93,14 @@ class ApiServer {
             }
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-            app.use(async function (req, res, next) {
+            app.use(async function(req, res, next) {
 
-                res.success = function (data, guard = [], force = false) {
+
+                res.error = function(code, errors = []) {
+                    throw new ErrorException(code, errors);
+                }
+
+                res.success = function(data, guard = [], force = false) {
 
                     if (Array.isArray(guard) && !force) {
                         guard = [
