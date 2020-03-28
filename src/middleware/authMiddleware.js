@@ -1,5 +1,6 @@
 import HttpClient from '@azteam/http-client';
 import { ErrorException, TOKEN_EXPIRED } from '@azteam/error';
+import jwt from 'jsonwebtoken';
 
 
 
