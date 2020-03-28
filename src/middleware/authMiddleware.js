@@ -23,9 +23,9 @@ async function getInfoByAPIToken(endpoint, token) {
 }
 
 
-export default (cb_refresh_token, cb_api_key) => {
+export default (cb_refresh_token, cb_login_api) => {
     return async (req, res, next) => {
-        let token = req.headers.authorization || req.signedCookies.access_token;
+        let token = req.signedCookies.access_token || req.headers.authorization;
 
         if (token && token.startsWith('Bearer ')) {
             token = token.replace('Bearer ', '');
@@ -48,7 +48,7 @@ export default (cb_refresh_token, cb_api_key) => {
                         throw new ErrorException(TOKEN_EXPIRED)
                     }
                 } else if (error.name === 'JsonWebTokenError') {
-                    const data = await cb_api_key(token);
+                    const data = await cb_login_api(token);
                     data && (jwt_data = data);
                 }
             }
