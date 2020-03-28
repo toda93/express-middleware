@@ -7,8 +7,8 @@ import etagMiddleware from './middleware/etagMiddleware';
 import paginateMiddleware from './middleware/paginateMiddleware';
 
 
-function jwtSign(payload) {
-    jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: TOKEN_TIME_LIFE + 'm' });
+function jwtSign(payload, mTTL = 15) {
+    jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: ttl + 'm' });
 }
 
 
