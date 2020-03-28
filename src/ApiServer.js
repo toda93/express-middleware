@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
+import jwt from 'jsonwebtoken';
 
 const morgan = require('morgan');
 

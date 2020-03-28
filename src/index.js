@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 
 import ApiServer from './ApiServer';
 
@@ -7,14 +6,9 @@ import etagMiddleware from './middleware/etagMiddleware';
 import paginateMiddleware from './middleware/paginateMiddleware';
 
 
-function jwtSign(payload, mTTL = 15) {
-    jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: mTTL + 'm' });
-}
 
 
 export {
-    jwtSign,
-
     ApiServer,
 
     signMiddleware,
