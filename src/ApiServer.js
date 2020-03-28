@@ -28,6 +28,9 @@ class ApiServer {
         return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: mTTL + 'm' });
     }
 
+    jwtDecode(token) {
+        return jwt.decode(token);
+    }
 
     setWhiteList(whiteList) {
         this.whiteList = whiteList;
