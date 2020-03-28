@@ -1,8 +1,9 @@
-
 import ApiServer from './ApiServer';
 
 import signMiddleware from './middleware/signMiddleware';
 import etagMiddleware from './middleware/etagMiddleware';
+import authMiddleware from './middleware/authMiddleware';
+import roleMiddleware from './middleware/roleMiddleware';
 import paginateMiddleware from './middleware/paginateMiddleware';
 
 
@@ -14,4 +15,6 @@ export {
     signMiddleware,
     etagMiddleware,
     paginateMiddleware,
+    authMiddleware,
+    roleMiddleware,
 }
