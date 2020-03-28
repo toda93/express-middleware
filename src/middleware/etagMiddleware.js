@@ -1,4 +1,3 @@
-import { ErrorException } from '@azteam/error';
 import etag from 'etag';
 
 

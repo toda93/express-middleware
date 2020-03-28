@@ -1,4 +1,5 @@
 import HttpClient from '@azteam/http-client';
+import { ErrorException, TOKEN_EXPIRED } from '@azteam/error';
 
 
 
@@ -22,7 +23,7 @@ async function getInfoByAPIToken(endpoint, token) {
 }
 
 
-export default (endpoint) => {
+export default (cb_refresh_token, cb_api_key) => {
     return async (req, res, next) => {
         let token = req.headers.authorization || req.signedCookies.access_token;
 
@@ -31,27 +32,27 @@ export default (endpoint) => {
         }
 
 
-        
 
-        
+
+
         return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
             if (error) {
                 if (error.name === 'TokenExpiredError') {
-                    const data = await refreshToken(refreshTokenEndpoint, {
-                        refreshToken: req.signedCookies.refresh_token,
-                        ip: req.ip,
-                        agent: req.get('User-Agent')
-                    });
-                    if (data) {
-                        res.cookie('access_token', data.access_token, {
-                            httpOnly: true,
-                            signed: true,
-                            maxAge: 86400000 * 365 // 1 year
-                        });
-                        jwt_data = jwt.decode(data.access_token);
+                    if (req.signedCookies.refresh_token) {
+                        const access_token = await cb_refresh_token(req.signedCookies.refresh_token);
+                        if (data) {
+                            res.cookie('access_token', data.access_token, {
+                                httpOnly: true,
+                                signed: true,
+                                maxAge: 86400000 * 365 // 1 year
+                            });
+                            jwt_data = jwt.decode(access_token);
+                        }
+                    } else {
+                        throw new ErrorException(TOKEN_EXPIRED)
                     }
                 } else if (error.name === 'JsonWebTokenError') {
-                    const data = await getInfoByAPIToken(checkAPITokenEndpoint, token);
+                    const data = await cb_api_key(token);
                     data && (jwt_data = data);
                 }
             }
