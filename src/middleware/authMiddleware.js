@@ -1,9 +1,13 @@
 import HttpClient from '@azteam/http-client';
-import { ErrorException, TOKEN_EXPIRED } from '@azteam/error';
+import {ErrorException, TOKEN_EXPIRED} from '@azteam/error';
 import jwt from 'jsonwebtoken';
 
 
-
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    signed: true,
+    maxAge: 86400000 * 365 // 1 year
+};
 
 async function refreshToken(endpoint, data) {
     const client = new HttpClient();
@@ -34,23 +38,19 @@ export default (cb_refresh_token, cb_login_api) => {
 
         return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
             if (error) {
+                let data;
                 if (error.name === 'TokenExpiredError') {
                     if (req.signedCookies.refresh_token) {
-                        const access_token = await cb_refresh_token(req.signedCookies.refresh_token);
-                        if (data) {
-                            res.cookie('access_token', data.access_token, {
-                                httpOnly: true,
-                                signed: true,
-                                maxAge: 86400000 * 365 // 1 year
-                            });
-                            jwt_data = jwt.decode(access_token);
-                        }
+                        data = await cb_refresh_token(req.signedCookies.refresh_token);
                     } else {
                         throw new ErrorException(TOKEN_EXPIRED)
                     }
                 } else if (error.name === 'JsonWebTokenError') {
-                    const data = await cb_login_api(token);
-                    data && (jwt_data = data);
+                    data = await cb_login_api(token);
+                }
+                if (data) {
+                    res.cookie('access_token', data.access_token, COOKIE_OPTIONS);
+                    jwt_data = jwt.decode(data.access_token);
                 }
             }
             if (jwt_data) {
