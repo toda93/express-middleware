@@ -8,7 +8,7 @@ import paginateMiddleware from './middleware/paginateMiddleware';
 
 
 function jwtSign(payload, mTTL = 15) {
-    jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: ttl + 'm' });
+    jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: mTTL + 'm' });
 }
 
 
