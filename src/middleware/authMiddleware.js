@@ -31,10 +31,6 @@ export default (cb_refresh_token, cb_api_key) => {
             token = token.replace('Bearer ', '');
         }
 
-
-
-
-
         return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
             if (error) {
                 if (error.name === 'TokenExpiredError') {
