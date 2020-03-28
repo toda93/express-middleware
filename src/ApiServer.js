@@ -16,13 +16,17 @@ import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
 
 
 class ApiServer {
-    constructor(secretKey) {
-        this.secretKey = secretKey;
+    constructor() {
         this.controllers = {};
         this.middlewares = [];
         this.whiteList = [];
         this.debug = false;
     }
+
+    jwtSign(payload, mTTL = 15) {
+        jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: mTTL + 'm' });
+    }
+
 
     setWhiteList(whiteList) {
         this.whiteList = whiteList;
@@ -70,7 +74,7 @@ class ApiServer {
 
             app.set('trust proxy', 1);
 
-            app.use(cookieParser(this.secretKey));
+            app.use(cookieParser(process.env.SECRET_KEY));
 
 
             if (this.whiteList) {
@@ -224,4 +228,4 @@ class ApiServer {
     }
 }
 
-export default ApiServer;
+export default new ApiServer;
