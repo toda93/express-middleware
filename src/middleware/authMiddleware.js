@@ -22,13 +22,18 @@ async function getInfoByAPIToken(endpoint, token) {
 }
 
 
-export default (refreshTokenEndpoint, checkAPITokenEndpoint) => {
+export default (endpoint) => {
     return async (req, res, next) => {
         let token = req.headers.authorization || req.signedCookies.access_token;
 
         if (token && token.startsWith('Bearer ')) {
             token = token.replace('Bearer ', '');
         }
+
+
+        
+
+        
         return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
             if (error) {
                 if (error.name === 'TokenExpiredError') {
