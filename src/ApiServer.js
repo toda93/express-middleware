@@ -10,7 +10,7 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
-import { decryptAES } from '@azteam/crypto';
+import { encyptAES, decryptAES } from '@azteam/crypto';
 
 
 const morgan = require('morgan');
