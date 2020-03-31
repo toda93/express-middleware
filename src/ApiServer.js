@@ -56,7 +56,7 @@ class ApiServer {
                 controller,
                 middleware
             });
-        });
+        }, this);
 
         return this;
     }
