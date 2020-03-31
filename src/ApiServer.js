@@ -50,11 +50,14 @@ class ApiServer {
         return this;
     }
 
-    addMiddleware(controller, middleware) {
-        this.middlewares.push({
-            controller,
-            middleware
+    addMiddleware(controllers, middleware) {
+        controllers.map(function(controller) {
+            this.middlewares.push({
+                controller,
+                middleware
+            });
         });
+
         return this;
     }
 
