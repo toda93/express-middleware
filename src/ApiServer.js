@@ -78,7 +78,9 @@ class ApiServer {
         if (!_.isEmpty(this.controllers)) {
 
             const app = express();
-            app.use(helmet());
+            app.use(helmet({
+                frameguard: false
+            }));
 
             app.use(methodOverride());
             app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
@@ -202,7 +204,7 @@ class ApiServer {
             });
 
             app.all('/', async (req, res) => {
-                if(req.headers['sec-fetch-dest'] === 'iframe' || req.headers['sec-fetch-mode'] === 'cors'){
+                if (req.headers['sec-fetch-dest'] === 'iframe' || req.headers['sec-fetch-mode'] === 'cors') {
                     const hash = encyptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
                     return res.redirect(req.protocol + '://' + req.get('host') + '/cors/' + hash);
                 }
