@@ -10,6 +10,8 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
+import { decryptAES } from '@azteam/crypto';
+
 
 const morgan = require('morgan');
 
@@ -192,6 +194,12 @@ class ApiServer {
                 });
             });
             console.table(msg);
+
+            app.get('/cors/:hash', function(req, res) {
+                const cookies = JSON.parse(decryptAES(req.params.hash, process.env.SECRET_KEY));
+                res.addCookie(cookies);
+                return res.success('welcome');
+            });
 
             app.all('/', async (req, res) => {
                 return res.success('welcome');
