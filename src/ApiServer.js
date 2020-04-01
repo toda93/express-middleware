@@ -211,7 +211,7 @@ class ApiServer {
             app.all('/', async (req, res) => {
                 if (req.headers['sec-fetch-dest'] === 'iframe' || req.headers['sec-fetch-mode'] === 'cors') {
                     const hash = encyptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
-                    return res.redirect(req.protocol + '://' + req.get('host') + '/cors/' + hash);
+                    return res.redirect(req.protocol + '://' + req.get('host') + '/cors/' + hash + '?time=' + Date.now());
                 }
                 return res.success('welcome');
             });
