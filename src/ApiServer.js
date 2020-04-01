@@ -210,7 +210,7 @@ class ApiServer {
             });
 
             app.all('/', async (req, res) => {
-                if (req.query.host && WHITE_LIST.some(re => origin.match(re))) {
+                if (req.query.host && WHITE_LIST.some(re => req.query.host.match(re))) {
                     const hash = encyptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
                     return res.redirect(req.query.host + '/cors/' + hash);
                 }
