@@ -165,12 +165,13 @@ class ApiServer {
 
 
                 res.addCookie = function(data) {
-                    const signed = !this.debug;
+                    const secure = !this.debug;
                     _.map(data, (value, key) => {
 
                         res.cookie(key, value, {
-                            signed,
+                            secure,
                             httpOnly: true,
+                            signed: true,
                             maxAge: 86400000 * 365 // 1 year
                         });
                     });
