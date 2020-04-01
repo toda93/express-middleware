@@ -76,7 +76,13 @@ class ApiServer {
 
     start(port) {
         if (!_.isEmpty(this.controllers)) {
-
+            const COOKIES_OPTIONS = {
+                secure: !this.debug,
+                httpOnly: true,
+                signed: true,
+                maxAge: 86400000 * 365 // 1 year
+            }
+            
             const app = express();
             app.use(helmet({
                 frameguard: false
@@ -165,18 +171,10 @@ class ApiServer {
 
 
                 res.addCookie = function(data) {
-                    const secure = !this.debug;
                     _.map(data, (value, key) => {
-
-                        res.cookie(key, value, {
-                            secure,
-                            httpOnly: true,
-                            signed: true,
-                            maxAge: 86400000 * 365 // 1 year
-                        });
+                        res.cookie(key, value, COOKIES_OPTIONS);
                     });
                 }
-
                 next();
             });
 
