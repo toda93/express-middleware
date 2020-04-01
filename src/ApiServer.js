@@ -82,7 +82,9 @@ class ApiServer {
                 signed: true,
                 maxAge: 86400000 * 365 // 1 year
             }
-            
+            const WHITE_LIST = this.whiteList;
+
+
             const app = express();
             app.use(helmet({
                 frameguard: false
@@ -97,13 +99,12 @@ class ApiServer {
             app.use(cookieParser(process.env.SECRET_KEY));
 
 
-            if (this.whiteList) {
-                const whiteList = this.whiteList;
+            if (WHITE_LIST) {
                 app.use(cors({
                     credentials: true,
                     origin: (origin, callback) => {
                         if (!origin ||
-                            whiteList.some(re => origin.match(re))) {
+                            WHITE_LIST.some(re => origin.match(re))) {
                             callback(null, true)
                         } else {
                             callback(null, false)
@@ -209,9 +210,9 @@ class ApiServer {
             });
 
             app.all('/', async (req, res) => {
-                if (req.headers['sec-fetch-dest'] === 'iframe' || req.headers['sec-fetch-mode'] === 'cors') {
+                if (req.query.host && WHITE_LIST.some(re => origin.match(re))) {
                     const hash = encyptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
-                    return res.redirect(req.protocol + '://' + req.get('host') + '/cors/' + hash + '?time=' + Date.now());
+                    return res.redirect(req.query.host + '/cors/' + hash);
                 }
                 return res.success('welcome');
             });
