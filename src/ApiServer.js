@@ -169,7 +169,11 @@ class ApiServer {
                     });
                 };
 
-
+                res.cleanCookie = function(data) {
+                    _.map(data, (name) => {
+                        res.clearCookie(name);
+                    });
+                }
                 res.addCookie = function(data) {
                     _.map(data, (value, key) => {
                         res.cookie(key, value, COOKIES_OPTIONS);
