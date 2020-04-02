@@ -78,6 +78,7 @@ class ApiServer {
         if (!_.isEmpty(this.controllers)) {
             const COOKIES_OPTIONS = {
                 secure: !this.debug,
+                sameSite: 'None'
                 httpOnly: true,
                 signed: true,
                 maxAge: 86400000 * 365 // 1 year
