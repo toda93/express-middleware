@@ -77,7 +77,7 @@ class ApiServer {
     start(port) {
         if (!_.isEmpty(this.controllers)) {
             const COOKIES_OPTIONS = {
-                secure: !this.debug,
+                secure: process.env.NODE_ENV === 'production',
                 sameSite: 'Lax',
                 httpOnly: true,
                 signed: true,
