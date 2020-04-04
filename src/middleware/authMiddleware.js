@@ -1,7 +1,6 @@
 import HttpClient from '@azteam/http-client';
-import { ErrorException, TOKEN_EXPIRED } from '@azteam/error';
+import {ErrorException, TOKEN_EXPIRED} from '@azteam/error';
 import jwt from 'jsonwebtoken';
-
 
 
 const COOKIES_OPTIONS = {
@@ -25,18 +24,23 @@ export default (cb_refresh_token, cb_login_api) => {
                         if (req.signedCookies.refresh_token) {
                             data = await cb_refresh_token(req.signedCookies.refresh_token);
                         } else {
+                            if (req.signedCookies.api) {
+                                data = await cb_login_api(token);
+                            }
                             throw new ErrorException(TOKEN_EXPIRED)
                         }
                     } else if (error.name === 'JsonWebTokenError') {
                         data = await cb_login_api(token);
                     }
                     if (data) {
-                        res.cookie('access_token', data.access_token, COOKIES_OPTIONS);
+                        res.addCookie(data);
                         jwt_data = jwt.decode(data.access_token);
                     }
                 }
                 if (jwt_data) {
                     req.user = jwt_data;
+                } else {
+                    res.cleanCookie(['access_token', 'refresh_token']);
                 }
                 return next();
             });
