@@ -20,8 +20,9 @@ import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
 
 class ApiServer {
     constructor() {
-        this.controllers = {};
         this.middlewares = [];
+        this.controllers = {};
+        this.controllersMiddlewares = [];
         this.whiteList = [];
         this.debug = false;
     }
@@ -47,19 +48,15 @@ class ApiServer {
         return this;
     }
 
-    addController(name, controller) {
-        this.controllers[name] = controller;
+    addMiddleware(middleware) {
+        controllers.map(function(controller) {
+            this.middlewares.push(middleware);
+        }, this);
         return this;
     }
 
-    addMiddleware(controllers, middleware) {
-        controllers.map(function(controller) {
-            this.middlewares.push({
-                controller,
-                middleware
-            });
-        }, this);
-
+    addController(name, controller) {
+        this.controllers[name] = controller;
         return this;
     }
 
@@ -73,6 +70,18 @@ class ApiServer {
         }
         return this;
     }
+
+    addControllersMiddleware(controllers, middleware) {
+        controllers.map(function(controller) {
+            this.controllersMiddlewares.push({
+                controller,
+                middleware
+            });
+        }, this);
+
+        return this;
+    }
+
 
     start(port) {
         if (!_.isEmpty(this.controllers)) {
@@ -100,7 +109,7 @@ class ApiServer {
             app.use(cookieParser(process.env.SECRET_KEY));
 
 
-             app.use(cors({
+            app.use(cors({
                 credentials: true,
                 origin: (origin, callback) => {
                     if (!WHITE_LIST ||
@@ -115,6 +124,12 @@ class ApiServer {
             if (this.debug) {
                 app.use(morgan('dev'));
             }
+
+
+            _.map(this.middlewares, (middleware) => {
+                app.get(middleware);
+            });
+
 
             app.get('/robots.txt', function(req, res) {
                 res.type('text/plain');
@@ -193,7 +208,7 @@ class ApiServer {
                     });
 
                     let middlewares = [];
-                    const mid = _.find(this.middlewares, (item) => item.controller === name || item.controller === '*');
+                    const mid = _.find(this.controllersMiddlewares, (item) => item.controller === name || item.controller === '*');
                     if (mid) {
                         middlewares.push(mid.middleware);
                     }
