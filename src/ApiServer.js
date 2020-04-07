@@ -100,19 +100,17 @@ class ApiServer {
             app.use(cookieParser(process.env.SECRET_KEY));
 
 
-            if (WHITE_LIST) {
-                app.use(cors({
-                    credentials: true,
-                    origin: (origin, callback) => {
-                        if (!origin ||
-                            WHITE_LIST.some(re => origin.match(re))) {
-                            callback(null, true)
-                        } else {
-                            callback(null, false)
-                        }
-                    },
-                }));
-            }
+             app.use(cors({
+                credentials: true,
+                origin: (origin, callback) => {
+                    if (!WHITE_LIST ||
+                        WHITE_LIST.some(re => origin.match(re))) {
+                        callback(null, true)
+                    } else {
+                        callback(null, false)
+                    }
+                },
+            }));
 
             if (this.debug) {
                 app.use(morgan('dev'));
