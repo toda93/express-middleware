@@ -15,7 +15,7 @@ import { encyptAES, decryptAES } from '@azteam/crypto';
 
 const morgan = require('morgan');
 
-import { ErrorException, httpErrorHandler, NOT_FOUND } from '@azteam/error';
+import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
 
 
 class ApiServer {
@@ -222,7 +222,14 @@ class ApiServer {
                 throw new ErrorException(NOT_FOUND);
             });
 
-            app.use(httpErrorHandler);
+            app.use((e, req, res, next) => {
+                const error = errorCatch(e);
+
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(error.errors);
+                }
+                return res.status(error.status).json({ success: false, errors: error.errors });
+            });
 
             const server = http.Server(app);
 
