@@ -112,7 +112,9 @@ class ApiServer {
             app.use(cors({
                 credentials: true,
                 origin: (origin, callback) => {
-                    if (!WHITE_LIST ||
+                    if (
+                        !origin ||
+                        !WHITE_LIST ||
                         WHITE_LIST.some(re => origin.match(re))) {
                         callback(null, true)
                     } else {
