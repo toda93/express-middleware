@@ -12,10 +12,10 @@ const COOKIES_OPTIONS = {
 
 export default (cb_refresh_token, cb_login_api) => {
     return async (req, res, next) => {
-        if (req.headers['APP_KEY'] === process.env.SECRET_KEY) {
+        if (req.headers['x-app-secret'] === process.env.SECRET_KEY) {
             let user = {};
-            if (req.headers['USER']) {
-                user = JSON.parse(req.headers['USER']);
+            if (req.headers.user) {
+                user = JSON.parse(req.headers['x-app-user']);
             }
             req.user = user;
         } else {
@@ -23,10 +23,14 @@ export default (cb_refresh_token, cb_login_api) => {
             if (token) {
                 token = token.replace('Bearer ', '');
 
+
+
+
                 return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
                     if (error) {
                         let data;
                         if (error.name === 'TokenExpiredError') {
+
                             if (req.signedCookies.refresh_token) {
                                 data = await cb_refresh_token(req.signedCookies.refresh_token);
                             } else {
