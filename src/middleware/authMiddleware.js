@@ -14,7 +14,7 @@ export default (cb_refresh_token, cb_login_api) => {
     return async (req, res, next) => {
         if (req.headers['x-app-secret'] === process.env.SECRET_KEY) {
             let user = {};
-            if (req.headers.user) {
+            if (req.headers['x-app-user']) {
                 user = JSON.parse(req.headers['x-app-user']);
             }
             req.user = user;
