@@ -1,4 +1,4 @@
-import { ErrorException, TOKEN_EXPIRED } from '@azteam/error';
+import {ErrorException} from '@azteam/error';
 import jwt from 'jsonwebtoken';
 
 
@@ -20,26 +20,18 @@ export default (cb_refresh_token, cb_login_api) => {
             req.user = user;
         } else {
             let token = req.signedCookies.access_token || req.headers.authorization;
-
-            if (req.signedCookies.api_key && req.signedCookies.api_key !== req.headers.authorization) {
-                token = req.headers.authorization;
-            }
-
             if (token) {
                 token = token.replace('Bearer ', '');
                 return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
                     if (error) {
                         let data;
                         if (error.name === 'TokenExpiredError') {
-
                             if (req.signedCookies.refresh_token) {
                                 data = await cb_refresh_token(req.signedCookies.refresh_token);
-                            } else {
-                                if (req.signedCookies.api) {
-                                    data = await cb_login_api(token);
-                                }
-                                throw new ErrorException(TOKEN_EXPIRED)
+                            } else if (req.signedCookies.api_key) {
+                                data = await cb_login_api(req.signedCookies.api_key);
                             }
+                            throw new ErrorException(TOKEN_EXPIRED)
                         } else if (error.name === 'JsonWebTokenError') {
                             data = await cb_login_api(token);
                         }
