@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 
 const COOKIES_OPTIONS = {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV !== 'development',
     sameSite: 'Lax',
     httpOnly: true,
     signed: true,
