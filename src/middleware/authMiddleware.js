@@ -31,7 +31,6 @@ export default (cb_refresh_token, cb_login_api) => {
                             } else if (req.signedCookies.api_key) {
                                 data = await cb_login_api(req.signedCookies.api_key);
                             }
-                            throw new ErrorException(TOKEN_EXPIRED)
                         } else if (error.name === 'JsonWebTokenError') {
                             data = await cb_login_api(token);
                         }
