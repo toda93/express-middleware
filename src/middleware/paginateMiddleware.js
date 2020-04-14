@@ -1,4 +1,4 @@
-export default (defaultLimit) => {
+export default (defaultLimit = 50) => {
     return async (req, res, next) => {
         req.paginate = {};
         if (req.query.page) {
