@@ -115,7 +115,7 @@ class ApiServer {
                     if (
                         !origin ||
                         !WHITE_LIST ||
-                        WHITE_LIST.some(re => origin.match(re))) {
+                        WHITE_LIST.some(re => origin.endsWith(re))) {
                         callback(null, true)
                     } else {
                         callback(null, false)
