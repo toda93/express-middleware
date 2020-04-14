@@ -146,12 +146,13 @@ class ApiServer {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function(data, guard = [], force = false) {
+                 res.success = function(data, guard = [], force = false) {
 
                     if (Array.isArray(guard) && !force) {
                         guard = [
                             ...guard,
                             '__v',
+                            '_id',
                             'updated_at',
                             'created_at',
                             'created_id',
@@ -168,12 +169,17 @@ class ApiServer {
                                 return _.omit(object, guard);
                             });
                         } else if (_.isObject(data)) {
-                            if (data.toJSON) {
-                                data = data.toJSON();
-                            }
                             if (data.docs) {
-                                data.docs = _.omit(data.docs, guard);
+                                data.docs = _.map(data.docs, object => {
+                                    if (object.toJSON) {
+                                        object = object.toJSON();
+                                    }
+                                    return _.omit(object, guard);
+                                });
                             } else {
+                                if (data.toJSON) {
+                                    data = data.toJSON();
+                                }
                                 data = _.omit(data, guard);
 
                             }
