@@ -10,7 +10,7 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
-import { encyptAES, decryptAES } from '@azteam/crypto';
+import { encryptAES, decryptAES } from '@azteam/crypto';
 
 
 const morgan = require('morgan');
@@ -233,7 +233,7 @@ class ApiServer {
 
             app.all('/', async (req, res) => {
                 if (req.query.host && WHITE_LIST.some(re => req.query.host.match(re))) {
-                    const hash = encyptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
+                    const hash = encryptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
                     return res.redirect(req.query.host + '/cors/' + hash);
                 }
                 return res.success('welcome');
