@@ -1,5 +1,6 @@
-export default (defaultLimit = 50, options = {}) => {
+export default (options = {}) => {
     options = {
+    	limit: 50,
         searchFields: [],
         sortFields: [],
         ...options
@@ -10,7 +11,7 @@ export default (defaultLimit = 50, options = {}) => {
         req.paginate = {};
         if (req.query.page) {
             req.paginate.page = Number(req.query.page);
-            req.paginate.limit = req.query.limit ? Number(req.query.limit) : defaultLimit;
+            req.paginate.limit = req.query.limit ? Number(req.query.limit) : options.limit;
             req.paginate.offset = (req.paginate.page - 1) * req.paginate.limit;
 
             delete req.query.page;
