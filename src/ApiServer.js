@@ -129,7 +129,7 @@ class ApiServer {
 
 
             _.map(this.middlewares, (middleware) => {
-                app.get(middleware);
+                app.use(middleware);
             });
 
 
