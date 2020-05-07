@@ -8,6 +8,7 @@ export default (options = {}) => {
 
 
     return async (req, res, next) => {
+        req.resOptions = options;
         req.paginate = {};
         if (req.query.page) {
             req.paginate.page = Number(req.query.page);

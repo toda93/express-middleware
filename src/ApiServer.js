@@ -146,7 +146,7 @@ class ApiServer {
                     throw new ErrorException(code, errors);
                 }
 
-                 res.success = function(data, guard = [], force = false) {
+                res.success = function(data, guard = [], force = false) {
 
                     if (Array.isArray(guard) && !force) {
                         guard = [
@@ -188,7 +188,8 @@ class ApiServer {
 
                     return res.json({
                         success: true,
-                        data
+                        data,
+                        options: req.resOptions,
                     });
                 };
 
