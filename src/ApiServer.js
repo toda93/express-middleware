@@ -22,9 +22,6 @@ function omitItem(item, guard) {
     if (item.toJSON) {
         item = item.toJSON();
     }
-
-    console.error(item, typeof item);
-
     if (_.isObject(item)) {
         return _.omit(item, guard);
     }
