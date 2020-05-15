@@ -18,6 +18,17 @@ const morgan = require('morgan');
 import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
 
 
+function omitItem(item, guard) {
+    if (item.toJSON) {
+        item = item.toJSON();
+    }
+    if (_.isObject(item)) {
+        return _.omit(item, guard);
+    }
+    return item;
+}
+
+
 class ApiServer {
     constructor() {
         this.middlewares = [];
@@ -162,26 +173,16 @@ class ApiServer {
                     }
                     if (!_.isEmpty(guard)) {
                         if (_.isArray(data)) {
-                            data = _.map(data, object => {
-                                if (object.toJSON) {
-                                    object = object.toJSON();
-                                }
-                                return _.omit(object, guard);
+                            data = _.map(data, item => {
+                                return omitItem(item, guard);
                             });
                         } else if (_.isObject(data)) {
                             if (data.docs) {
-                                data.docs = _.map(data.docs, object => {
-                                    if (object.toJSON) {
-                                        object = object.toJSON();
-                                    }
-                                    return _.omit(object, guard);
+                                data.docs = _.map(data.docs, item => {
+                                    return omitItem(item, guard);
                                 });
                             } else {
-                                if (data.toJSON) {
-                                    data = data.toJSON();
-                                }
-                                data = _.omit(data, guard);
-
+                                data = omitItem(data, guard);
                             }
                         }
                     }
