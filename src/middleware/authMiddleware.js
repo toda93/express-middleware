@@ -1,4 +1,4 @@
-import {ErrorException} from '@azteam/error';
+import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
 
 
@@ -19,7 +19,13 @@ export default (cb_refresh_token, cb_login_api) => {
             }
             req.user = user;
         } else {
-            let token = req.signedCookies.access_token || req.headers.authorization;
+            let token = req.signedCookies.access_token;
+
+            if (req.headers.authorization && req.signedCookies.api_key != req.headers.authorization) {
+                token = req.headers.authorization;
+            }
+
+
             if (token) {
                 token = token.replace('Bearer ', '');
                 return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
