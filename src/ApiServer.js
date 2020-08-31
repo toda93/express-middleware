@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import methodOverride from 'method-override';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
@@ -13,7 +14,8 @@ import jwt from 'jsonwebtoken';
 import { encryptAES, decryptAES } from '@azteam/crypto';
 
 
-const morgan = require('morgan');
+import omitEmptyMiddleware from './middleware/omitEmptyMiddleware';
+
 
 import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
 
@@ -139,6 +141,7 @@ class ApiServer {
             }
 
 
+            app.use(omitEmptyMiddleware());
             _.map(this.middlewares, (middleware) => {
                 app.use(middleware);
             });
