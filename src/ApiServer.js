@@ -84,7 +84,7 @@ class ApiServer {
         return this;
     }
 
-    addMiddlewareToControllers(controllers, middleware) {
+    addMiddlewareToControllers(middleware, controllers) {
         controllers.map(function(controller) {
             this.controllersMiddlewares.push({
                 controller,
