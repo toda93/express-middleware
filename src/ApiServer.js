@@ -126,12 +126,11 @@ class ApiServer {
                 credentials: true,
                 origin: (origin, callback) => {
                     if (
-                        !origin ||
-                        !WHITE_LIST ||
+                        !origin || !WHITE_LIST.length ||
                         WHITE_LIST.some(re => origin.endsWith(re))) {
                         callback(null, true)
                     } else {
-                        callback(null, false)
+                        callback(new Error('Not allowed by CORS'));
                     }
                 },
             }));
