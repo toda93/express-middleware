@@ -172,7 +172,7 @@ class ApiServer {
                         'deleted_at'
                     ];
 
-                    let guard = _.difference(guard, allows);
+                    guard = _.difference(guard, allows);
                     if (!_.isEmpty(guard)) {
                         if (_.isArray(data)) {
                             data = _.map(data, item => {
