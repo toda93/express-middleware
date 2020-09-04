@@ -159,20 +159,20 @@ class ApiServer {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function(data, guard = [], force = false) {
+                res.success = function(data, guard = [], allows = []) {
+                    guard = [
+                        ...guard,
+                        '__v',
+                        '_id',
+                        'updated_at',
+                        'created_at',
+                        'created_id',
+                        'modified_at',
+                        'modified_id',
+                        'deleted_at'
+                    ];
 
-                    if (Array.isArray(guard) && !force) {
-                        guard = [
-                            ...guard,
-                            '__v',
-                            '_id',
-                            'updated_at',
-                            'created_at',
-                            'created_id',
-                            'modified_at',
-                            'modified_id',
-                        ];
-                    }
+                    let guard = _.difference(guard, allows);
                     if (!_.isEmpty(guard)) {
                         if (_.isArray(data)) {
                             data = _.map(data, item => {
