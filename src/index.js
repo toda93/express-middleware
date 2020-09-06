@@ -5,6 +5,7 @@ import etagMiddleware from './middleware/etagMiddleware';
 import authMiddleware from './middleware/authMiddleware';
 import roleMiddleware from './middleware/roleMiddleware';
 import paginateMiddleware from './middleware/paginateMiddleware';
+import validateMiddleware from './middleware/validateMiddleware';
 
 
 
@@ -17,4 +18,5 @@ export {
     paginateMiddleware,
     authMiddleware,
     roleMiddleware,
+    validateMiddleware
 }
