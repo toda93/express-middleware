@@ -223,7 +223,10 @@ class ApiServer {
                     });
 
                     let middlewares = [];
-                    const mid = _.find(this.controllersMiddlewares, (item) => item.controller === name || item.controller === '*');
+
+
+                    const mid = _.find(this.controllersMiddlewares, (item) => item.controller === splitName[0] || item.controller === '*');
+
                     if (mid) {
                         middlewares.push(mid.middleware);
                     }
