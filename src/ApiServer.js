@@ -11,13 +11,13 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
-import { encryptAES, decryptAES } from '@azteam/crypto';
+import {decryptAES, encryptAES} from '@azteam/crypto';
 
 
 import omitEmptyMiddleware from './middleware/omitEmptyMiddleware';
 
 
-import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
+import {errorCatch, ErrorException, NOT_FOUND} from '@azteam/error';
 
 
 function omitItem(item, guard) {
@@ -62,7 +62,7 @@ class ApiServer {
     }
 
     addMiddleware(middleware) {
-        controllers.map(function(controller) {
+        controllers.map(function (controller) {
             this.middlewares.push(middleware);
         }, this);
         return this;
@@ -85,7 +85,7 @@ class ApiServer {
     }
 
     addMiddlewareToControllers(middleware, controllers) {
-        controllers.map(function(controller) {
+        controllers.map(function (controller) {
             this.controllersMiddlewares.push({
                 controller,
                 middleware
@@ -114,7 +114,7 @@ class ApiServer {
             }));
 
             app.use(methodOverride());
-            app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
+            app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
@@ -146,20 +146,20 @@ class ApiServer {
             });
 
 
-            app.get('/robots.txt', function(req, res) {
+            app.get('/robots.txt', function (req, res) {
                 res.type('text/plain');
-                res.send("User-agent: *\nDisallow: /");
+                res.send('User-agent: *\nDisallow: /');
             });
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-            app.use(async function(req, res, next) {
+            app.use(async function (req, res, next) {
 
 
-                res.error = function(code, errors = []) {
+                res.error = function (code, errors = []) {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function(data, guard = [], allows = []) {
+                res.success = function (data, guard = [], allows = []) {
                     guard = [
                         ...guard,
                         '__v',
@@ -196,12 +196,12 @@ class ApiServer {
                     });
                 };
 
-                res.cleanCookie = function(data) {
+                res.cleanCookie = function (data) {
                     _.map(data, (name) => {
                         res.clearCookie(name);
                     });
                 }
-                res.addCookie = function(data) {
+                res.addCookie = function (data) {
                     _.map(data, (value, key) => {
                         res.cookie(key, value, COOKIES_OPTIONS);
                     });
@@ -212,6 +212,9 @@ class ApiServer {
             const msg = [];
             _.map(this.controllers, (controller, name) => {
                 _.map(controller, (item, key) => {
+                    const splitName = name.split('.');
+                    item.path = splitName[1] ? `/${splitName[1]}${item.path}` : item.path;
+
                     msg.push({
                         controller: name,
                         type: item.type,
@@ -224,12 +227,13 @@ class ApiServer {
                     if (mid) {
                         middlewares.push(mid.middleware);
                     }
+
                     app[item.type.toLowerCase()](item.path, ...middlewares, ...item.method);
                 });
             });
             console.table(msg);
 
-            app.get('/cors/:hash', function(req, res) {
+            app.get('/cors/:hash', function (req, res) {
                 const cookies = JSON.parse(decryptAES(req.params.hash, process.env.SECRET_KEY));
                 res.addCookie(cookies);
                 return res.success('welcome');
@@ -253,7 +257,7 @@ class ApiServer {
                 if (process.env.NODE_ENV === 'development') {
                     console.log(error.errors);
                 }
-                return res.status(error.status).json({ success: false, errors: error.errors });
+                return res.status(error.status).json({success: false, errors: error.errors});
             });
 
             const server = http.Server(app);
