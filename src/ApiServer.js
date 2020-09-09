@@ -234,7 +234,7 @@ class ApiServer {
                     app[item.type.toLowerCase()](item.path, ...middlewares, ...item.method);
                 });
             });
-            console.info("\n");
+            console.info("\r\n");
             console.table(msg);
 
             app.get('/cors/:hash', function(req, res) {
