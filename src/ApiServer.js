@@ -99,6 +99,7 @@ class ApiServer {
     start(port) {
         if (!_.isEmpty(this.controllers)) {
             const COOKIES_OPTIONS = {
+                domain: process.env.DOMAIN,
                 secure: process.env.NODE_ENV !== 'development',
                 sameSite: 'Lax',
                 httpOnly: true,
