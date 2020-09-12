@@ -1,6 +1,6 @@
 export default (options = {}) => {
     options = {
-    	limit: 50,
+        limit: 50,
         searchFields: [],
         sortFields: [],
         ...options
@@ -12,15 +12,19 @@ export default (options = {}) => {
         req.paginate = {};
         if (req.query.page) {
             req.paginate.page = Number(req.query.page);
-            req.paginate.limit = req.query.limit ? Number(req.query.limit) : options.limit;
             req.paginate.offset = (req.paginate.page - 1) * req.paginate.limit;
 
             delete req.query.page;
+        }
+        if (req.query.limit) {
+            req.paginate.limit = Number(req.query.limit);
             delete req.query.limit;
+
         }
 
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
-            req.paginate.sort = {[req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc'};
+            req.paginate.sort = {
+                [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc' };
 
             delete req.query.sort_by;
             delete req.query.sort_type;
