@@ -172,7 +172,6 @@ class ApiServer {
                         'modified_at',
                         'modified_id',
                         'deleted_at',
-
                         'metadata_disable',
                         'metadata_title',
                         'metadata_keywords',
