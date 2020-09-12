@@ -1,6 +1,6 @@
 export default (options = {}) => {
     options = {
-        limit: 50,
+        limit: 20,
         searchFields: [],
         sortFields: [],
         ...options
