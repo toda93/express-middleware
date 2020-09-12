@@ -165,12 +165,19 @@ class ApiServer {
                         ...guard,
                         '__v',
                         '_id',
+                        'status',
                         'updated_at',
                         'created_at',
                         'created_id',
                         'modified_at',
                         'modified_id',
-                        'deleted_at'
+                        'deleted_at',
+
+                        'metadata_disable',
+                        'metadata_title',
+                        'metadata_keywords',
+                        'metadata_description',
+                        'metadata_image_url',
                     ];
 
                     guard = _.difference(guard, allows);
