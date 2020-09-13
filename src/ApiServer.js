@@ -98,7 +98,7 @@ class ApiServer {
 
     start(port) {
         if (!_.isEmpty(this.controllers)) {
-            const COOKIES_OPTIONS = {
+            const SET_COOKIES_OPTIONS = {
                 domain: process.env.DOMAIN,
                 secure: process.env.NODE_ENV !== 'development',
                 sameSite: 'Lax',
@@ -106,6 +106,9 @@ class ApiServer {
                 signed: true,
                 maxAge: 86400000 * 365 // 1 year
             }
+            const CLEAR_COOKIES_OPTIONS = {
+                domain: process.env.DOMAIN,
+            };
             const WHITE_LIST = this.whiteList;
 
 
@@ -205,12 +208,12 @@ class ApiServer {
 
                 res.cleanCookie = function(data) {
                     _.map(data, (name) => {
-                        res.clearCookie(name, COOKIES_OPTIONS);
+                        res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
                     });
                 }
                 res.addCookie = function(data) {
                     _.map(data, (value, key) => {
-                        res.cookie(key, value, COOKIES_OPTIONS);
+                        res.cookie(key, value, SET_COOKIES_OPTIONS);
                     });
                 }
                 next();
