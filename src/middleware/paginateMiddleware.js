@@ -23,10 +23,11 @@ export default (options = {}) => {
 
             delete req.query.page;
         }
-        
+
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
             req.paginate.sort = {
-                [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc' };
+                [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc'
+            };
 
             delete req.query.sort_by;
             delete req.query.sort_type;
@@ -36,6 +37,14 @@ export default (options = {}) => {
             if (req.query.hasOwnProperty(key) && !options.searchFields.includes(key)) {
                 delete req.query[key];
             }
+        }
+        if (req.query.keywords) {
+
+            req.query[$text] = {
+                $search: req.query.keywords
+            };
+
+            delete req.query.keywords;
         }
 
         return next();
