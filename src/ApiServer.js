@@ -205,7 +205,7 @@ class ApiServer {
 
                 res.cleanCookie = function(data) {
                     _.map(data, (name) => {
-                        res.clearCookie(name);
+                        res.clearCookie(name, COOKIES_OPTIONS);
                     });
                 }
                 res.addCookie = function(data) {
