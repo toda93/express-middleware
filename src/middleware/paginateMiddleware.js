@@ -40,8 +40,12 @@ export default (options = {}) => {
         }
         if (req.query.keywords) {
 
-            req.query[$text] = {
-                $search: req.query.keywords
+            req.query = {
+                ...req.query,
+                $text: {
+                    $search: req.query.keywords
+                }
+
             };
 
             delete req.query.keywords;
