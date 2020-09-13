@@ -33,7 +33,7 @@ export default (options = {}) => {
         }
 
         for (const key in req.query) {
-            if (req.query.hasOwnProperty(key) && options.searchFields.includes(key)) {
+            if (req.query.hasOwnProperty(key) && !options.searchFields.includes(key)) {
                 delete req.query[key];
             }
         }
