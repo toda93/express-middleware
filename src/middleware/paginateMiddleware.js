@@ -48,12 +48,12 @@ export default (options = {}) => {
                     const newKey = key.replace('_end', '');
 
                     req.query[newKey] = {
-                        ...req.query[newKey]
+                        ...req.query[newKey],
                         $lt: value
                     }
                 }
-                
-                
+
+
                 if (!options.searchFields.includes(key)) {
                     delete req.query[key];
                 }
