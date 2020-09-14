@@ -36,9 +36,8 @@ export default (options = {}) => {
         for (const key in req.query) {
             if (req.query.hasOwnProperty(key)) {
                 const value = req.query[key];
-                if (!options.searchFields.includes(key)) {
-                    delete req.query[key];
-                } else if (key.endsWith('_start')) {
+
+                if (key.endsWith('_start')) {
                     const newKey = key.replace('_start', '');
 
                     req.query[newKey] = {
@@ -52,6 +51,11 @@ export default (options = {}) => {
                         ...req.query[newKey]
                         $lt: value
                     }
+                }
+                
+                
+                if (!options.searchFields.includes(key)) {
+                    delete req.query[key];
                 }
             }
         }
