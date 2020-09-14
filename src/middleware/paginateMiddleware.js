@@ -34,20 +34,34 @@ export default (options = {}) => {
         }
 
         for (const key in req.query) {
-            if (req.query.hasOwnProperty(key) && !options.searchFields.includes(key)) {
-                delete req.query[key];
+            if (req.query.hasOwnProperty(key)) {
+                const value = req.query[key];
+                if (!options.searchFields.includes(key)) {
+                    delete req.query[key];
+                } else if (key.endsWith('_start')) {
+                    const newKey = key.replace('_start', '');
+
+                    req.query[newKey] = {
+                        ...req.query[newKey],
+                        $gte: value
+                    }
+                } else if (key.endsWith('_end')) {
+                    const newKey = key.replace('_end', '');
+
+                    req.query[newKey] = {
+                        ...req.query[newKey]
+                        $lt: value
+                    }
+                }
             }
         }
         if (req.query.keywords) {
-
             req.query = {
                 ...req.query,
                 $text: {
                     $search: req.query.keywords
                 }
-
             };
-
             delete req.query.keywords;
         }
 
