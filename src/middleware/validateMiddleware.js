@@ -1,4 +1,4 @@
-import {ErrorException, VALIDATE} from '@azteam/error';
+import { ErrorException, VALIDATE } from '@azteam/error';
 
 
 function validateRequired(field, value) {
@@ -10,7 +10,7 @@ function validateRequired(field, value) {
             message: `'${field}' is required`
         };
     }
-    return error;
+    return { error };
 }
 
 function validateLength(field, value, length) {
@@ -49,6 +49,17 @@ function validateMaxLength(field, value, length) {
     return error;
 }
 
+function validateIn(field, value, range) {
+    let error = null;
+    if (value !== undefined && !range.inludes(value)) {
+        error = {
+            field,
+            code: 'VALIDATE_IN',
+            message: `'${field}' only accept range [${range.join(',')}]`
+        };
+    }
+    return error;
+}
 
 export default (type, rules) => {
     return async (req, res, next) => {
@@ -56,24 +67,28 @@ export default (type, rules) => {
         const reqData = req[type];
 
         for (const field in rules) {
+
             if (rules.hasOwnProperty(field)) {
                 const ruleData = rules[field];
                 for (const rule in ruleData) {
                     if (ruleData.hasOwnProperty(rule)) {
-                        const value = ruleData[rule];
+                        const ruleValue = ruleData[rule];
                         let error = null;
                         switch (rule) {
                             case 'required':
                                 error = validateRequired(field, reqData[field]);
                                 break;
                             case 'length':
-                                error = validateLength(field, reqData[field], value);
+                                error = validateLength(field, reqData[field], ruleValue);
                                 break;
                             case 'minLength':
-                                error = validateMinLength(field, reqData[field], value);
+                                error = validateMinLength(field, reqData[field], ruleValue);
                                 break;
                             case 'maxLength':
-                                error = validateMaxLength(field, reqData[field], value);
+                                error = validateMaxLength(field, reqData[field], ruleValue);
+                                break;
+                            case 'in':
+                                error = validateIn(field, reqData[field], ruleValue);
                                 break;
                         }
                         if (error) errors.push(error);
