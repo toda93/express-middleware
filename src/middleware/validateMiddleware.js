@@ -88,6 +88,7 @@ export default (type, rules) => {
                                 error = validateMaxLength(field, reqData[field], ruleValue);
                                 break;
                             case 'in':
+                                console.info(reqData[field], value);
                                 error = validateIn(field, reqData[field], ruleValue);
                                 break;
                         }
