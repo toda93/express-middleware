@@ -43,6 +43,7 @@ class ApiServer {
 
     setCallbackError(callback = null) {
         this.callbackError = callback;
+        return this;
     }
 
     jwtSign(payload, mTTL = 15) {
@@ -325,6 +326,7 @@ class ApiServer {
 
     setAlertCallback(callback) {
         this.alertCallback = callback;
+        return this;
     }
 
     _alert(status, msg) {
