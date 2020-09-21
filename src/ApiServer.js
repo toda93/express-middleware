@@ -40,6 +40,11 @@ class ApiServer {
         this.debug = false;
     }
 
+
+    setCallbackError(callback = null) {
+        this.callbackError = callback;
+    }
+
     jwtSign(payload, mTTL = 15) {
         return jwt.sign({
             ...payload,
@@ -271,6 +276,11 @@ class ApiServer {
                 if (process.env.NODE_ENV === 'development') {
                     console.log(error.errors);
                 }
+
+                if(this.callbackError){
+                    this.callbackError(error);
+                }
+
                 return res.status(error.status).json({ success: false, errors: error.errors });
             });
 
