@@ -10,7 +10,7 @@ function validateRequired(field, value) {
             message: `'${field}' is required`
         };
     }
-    return { error };
+    return error;
 }
 
 function validateLength(field, value, length) {
