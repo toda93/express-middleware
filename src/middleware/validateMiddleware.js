@@ -26,6 +26,7 @@ function validateLength(field, value, length) {
 }
 
 function validateMinLength(field, value, length) {
+
     let error = null;
     if (value !== undefined && value.length < length) {
         error = {
@@ -51,7 +52,7 @@ function validateMaxLength(field, value, length) {
 
 function validateIn(field, value, range) {
     let error = null;
-    if (value !== undefined && !range.inludes(value)) {
+    if (value !== undefined && !range.includes(value)) {
         error = {
             field,
             code: 'VALIDATE_IN',
@@ -88,7 +89,6 @@ export default (type, rules) => {
                                 error = validateMaxLength(field, reqData[field], ruleValue);
                                 break;
                             case 'in':
-                                console.info(reqData[field], value);
                                 error = validateIn(field, reqData[field], ruleValue);
                                 break;
                         }
