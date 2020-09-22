@@ -37,7 +37,7 @@ class ApiServer {
         this.controllers = {};
         this.controllersMiddlewares = [];
         this.whiteList = [];
-        this.debug = false;
+        this.debug = process.env.NODE_ENV === 'development';
     }
 
 
