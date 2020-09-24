@@ -174,7 +174,7 @@ class ApiServer {
                         ...guard,
                         '__v',
                         '_id',
-                        'status',
+                        // 'status',
                         'deleted_at',
                         'updated_at',
                         // 'created_at',

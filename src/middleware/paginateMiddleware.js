@@ -27,7 +27,8 @@ export default (options = {}) => {
         options.sortFields = [
             ...options.sortFields,
             'created_at',
-            'modified_at'
+            'modified_at',
+            'status'
         ]
 
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
