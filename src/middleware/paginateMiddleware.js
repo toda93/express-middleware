@@ -24,6 +24,12 @@ export default (options = {}) => {
             delete req.query.page;
         }
 
+        options.sortFields = [
+            ...options.sortFields,
+            'created_at',
+            'modified_at'
+        ]
+
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
             req.paginate.sort = {
                 [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc'
