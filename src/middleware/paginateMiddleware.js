@@ -2,10 +2,13 @@ export default (options = {}) => {
     options = {
         limit: 20,
         searchFields: [],
-        sortFields: [],
+        sortFields: [
+            'created_at',
+            'modified_at',
+            'status'
+        ],
         ...options
     };
-
 
     return async (req, res, next) => {
         req.resOptions = options;
@@ -23,14 +26,7 @@ export default (options = {}) => {
 
             delete req.query.page;
         }
-
-        options.sortFields = [
-            ...options.sortFields,
-            'created_at',
-            'modified_at',
-            'status'
-        ]
-
+       
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
             req.paginate.sort = {
                 [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc'
