@@ -112,9 +112,7 @@ class ApiServer {
                 signed: true,
                 maxAge: 86400000 * 365 // 1 year
             }
-            const CLEAR_COOKIES_OPTIONS = {
-                domain: process.env.DOMAIN,
-            };
+
             const WHITE_LIST = this.whiteList;
 
 
@@ -214,7 +212,7 @@ class ApiServer {
 
                 res.cleanCookie = function(data) {
                     _.map(data, (name) => {
-                        res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
+                        res.clearCookie(name);
                     });
                 }
                 res.addCookie = function(data) {
