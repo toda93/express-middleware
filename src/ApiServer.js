@@ -178,31 +178,35 @@ class ApiServer {
                         // 'created_at',
                         'created_id',
                         // 'modified_at',
-                        'modified_id',
-                        'metadata_disable',
-                        'metadata_title',
-                        'metadata_keywords',
-                        'metadata_description',
-                        'metadata_image_url',
+                        'modified_id'
                     ];
 
-                    guard = _.difference(guard, allows);
-                    if (!_.isEmpty(guard)) {
-                        if (_.isArray(data)) {
-                            data = _.map(data, item => {
-                                return omitItem(item, guard);
-                            });
-                        } else if (_.isObject(data)) {
-                            if (data.docs) {
-                                data.docs = _.map(data.docs, item => {
-                                    return omitItem(item, guard);
-                                });
-                            } else {
-                                data = omitItem(data, guard);
-                            }
-                        }
+                    if (_.isArray(data) || data.docs) {
+                        guard = [
+                            ...guard,
+                            'metadata_disable',
+                            'metadata_title',
+                            'metadata_keywords',
+                            'metadata_description',
+                            'metadata_image_url',
+                        ];
                     }
 
+                    guard = _.difference(guard, allows);
+
+                    if (_.isArray(data)) {
+                        data = _.map(data, item => {
+                            return omitItem(item, guard);
+                        });
+                    } else if (_.isObject(data)) {
+                        if (data.docs) {
+                            data.docs = _.map(data.docs, item => {
+                                return omitItem(item, guard);
+                            });
+                        } else {
+                            data = omitItem(data, guard);
+                        }
+                    }
                     return res.json({
                         success: true,
                         data,
@@ -276,7 +280,7 @@ class ApiServer {
                     console.log(error.errors);
                 }
 
-                if(this.callbackError){
+                if (this.callbackError) {
                     this.callbackError(error);
                 }
 
