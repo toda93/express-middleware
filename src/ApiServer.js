@@ -171,7 +171,7 @@ class ApiServer {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function(data, guard = [], allows = []) {
+                res.success = function(data = {}, guard = [], allows = []) {
                     guard = [
                         ...guard,
                         '__v',
