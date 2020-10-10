@@ -2,7 +2,7 @@ function omitEmpty(data) {
     Object.keys(data).map(function(key, index) {
         let value = data[key];
         if (typeof value === 'string') {
-        	
+
             value = value.trim();
 
             if (value === '' || value === 'NaN' || value === 'null' || value === 'undefined') {
@@ -29,9 +29,9 @@ function omitEmpty(data) {
 
 export default () => {
     return function(req, res, next) {
-        req.body = omitEmpty(req.body);
-        req.params = omitEmpty(req.params);
-        req.query = omitEmpty(req.query);
+        omitEmpty(req.body);
+        omitEmpty(req.params);
+        omitEmpty(req.query);
         return next();
     }
 }
