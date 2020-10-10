@@ -8,12 +8,7 @@ function omitEmpty(data) {
             if (value === '' || value === 'NaN' || value === 'null' || value === 'undefined') {
                 delete data[key];
             } else {
-
                 data[key] = value;
-
-                if (!isNaN(value)) {
-                    data[key] = Number(value);
-                }
             }
 
         } else {
