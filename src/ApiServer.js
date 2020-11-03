@@ -13,9 +13,6 @@ import jwt from 'jsonwebtoken';
 import {decryptAES, encryptAES} from '@azteam/crypto';
 
 
-import omitEmptyMiddleware from './middleware/omitEmptyMiddleware';
-
-
 import {errorCatch, ErrorException, NOT_FOUND} from '@azteam/error';
 
 
@@ -229,7 +226,6 @@ class ApiServer {
                 next();
             });
 
-            app.use(omitEmptyMiddleware());
             _.map(this.middlewares, (middleware) => {
                 app.use(middleware);
             });
