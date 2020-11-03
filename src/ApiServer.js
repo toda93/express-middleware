@@ -10,10 +10,10 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
-import {decryptAES, encryptAES} from '@azteam/crypto';
+import { decryptAES, encryptAES } from '@azteam/crypto';
 
 
-import {errorCatch, ErrorException, NOT_FOUND} from '@azteam/error';
+import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
 
 
 function omitItem(item, guard) {
@@ -25,6 +25,7 @@ function omitItem(item, guard) {
     }
     return item;
 }
+
 
 
 class ApiServer {
@@ -78,7 +79,7 @@ class ApiServer {
     }
 
     initController(apiDir) {
-        if(apiDir){
+        if (apiDir) {
             const controllerDirs = fs.readdirSync(apiDir);
 
             for (const dirName of controllerDirs) {
@@ -125,7 +126,7 @@ class ApiServer {
             }));
 
             app.use(methodOverride());
-            app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
+            app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
@@ -151,22 +152,22 @@ class ApiServer {
             }
 
 
-           
 
 
-            app.get('/robots.txt', function (req, res) {
+
+            app.get('/robots.txt', function(req, res) {
                 res.type('text/plain');
                 res.send('User-agent: *\nDisallow: /');
             });
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-            app.use(async function (req, res, next) {
+            app.use(async function(req, res, next) {
 
-                res.error = function (code, errors = []) {
+                res.error = function(code, errors = []) {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function (data = {}, guard = [], allows = []) {
+                res.success = function(data = {}, guard = [], allows = []) {
                     guard = [
                         ...guard,
                         '__v',
@@ -213,12 +214,12 @@ class ApiServer {
                     });
                 };
 
-                res.cleanCookie = function (data) {
+                res.cleanCookie = function(data) {
                     _.map(data, (name) => {
                         res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
                     });
                 }
-                res.addCookie = function (data) {
+                res.addCookie = function(data) {
                     _.map(data, (value, key) => {
                         res.cookie(key, value, SET_COOKIES_OPTIONS);
                     });
@@ -243,14 +244,14 @@ class ApiServer {
                         method: key,
                         path: item.path,
                     });
-                    
+
                     app[item.type.toLowerCase()](item.path, ...item.method);
                 });
             });
 
             console.table(msg);
 
-            app.get('/cors/:hash', function (req, res) {
+            app.get('/cors/:hash', function(req, res) {
                 const cookies = JSON.parse(decryptAES(req.params.hash, process.env.SECRET_KEY));
                 res.addCookie(cookies);
                 return res.success('welcome');
@@ -279,7 +280,7 @@ class ApiServer {
                     this.callbackError(error);
                 }
 
-                return res.status(error.status).json({success: false, errors: error.errors});
+                return res.status(error.status).json({ success: false, errors: error.errors });
             });
 
             const server = http.Server(app);

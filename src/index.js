@@ -6,6 +6,7 @@ import authMiddleware from './middleware/authMiddleware';
 import roleMiddleware from './middleware/roleMiddleware';
 import paginateMiddleware from './middleware/paginateMiddleware';
 import validateMiddleware from './middleware/validateMiddleware';
+import limitRequestMiddleware from './middleware/limitRequestMiddleware';
 
 
 
@@ -18,5 +19,6 @@ export {
     paginateMiddleware,
     authMiddleware,
     roleMiddleware,
-    validateMiddleware
+    validateMiddleware,
+    limitRequestMiddleware
 }
