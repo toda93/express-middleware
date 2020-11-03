@@ -1,6 +1,6 @@
 {
     "name": "@azteam/express",
-    "version": "1.2.22",
+    "version": "1.2.23",
     "description": "",
     "main": "src/index.js",
     "repository": {
@@ -32,6 +32,7 @@
         "etag": "^1.8.1",
         "express": "~4.17.1",
         "express-async-errors": "~3.1.1",
+        "fastest-validator": "^1.8.0",
         "helmet": "~3.21.2",
         "jsonwebtoken": "~8.2.1",
         "method-override": "~3.0.0",

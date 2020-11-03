@@ -1,9 +1,10 @@
-import {ErrorException, VALIDATE} from '@azteam/error';
+import { ErrorException, VALIDATE } from '@azteam/error';
+import Validator from 'fastest-validator';
 
 
 /* remove empty field or not have validate field */
 function omitData(data, inKeys = []) {
-    Object.keys(data).map(function (key, index) {
+    Object.keys(data).map(function(key, index) {
         if (inKeys.includes(key)) {
             let value = data[key];
             if (typeof value === 'string') {
@@ -91,7 +92,7 @@ export default (type, rules) => {
     return async (req, res, next) => {
         const errors = [];
         const reqData = omitData(req[type], Object.keys(rules));
-        
+
         /* validate field */
         for (const field in rules) {
             if (rules.hasOwnProperty(field)) {
