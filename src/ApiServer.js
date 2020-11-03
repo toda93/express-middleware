@@ -154,10 +154,7 @@ class ApiServer {
             }
 
 
-            app.use(omitEmptyMiddleware());
-            _.map(this.middlewares, (middleware) => {
-                app.use(middleware);
-            });
+           
 
 
             app.get('/robots.txt', function (req, res) {
@@ -230,6 +227,11 @@ class ApiServer {
                     });
                 }
                 next();
+            });
+
+            app.use(omitEmptyMiddleware());
+            _.map(this.middlewares, (middleware) => {
+                app.use(middleware);
             });
 
             const msg = [];
