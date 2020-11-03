@@ -1,4 +1,3 @@
-import path from 'path';
 import fs from 'fs';
 import http from 'http';
 import express from 'express';
@@ -11,13 +10,13 @@ import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
-import { decryptAES, encryptAES } from '@azteam/crypto';
+import {decryptAES, encryptAES} from '@azteam/crypto';
 
 
 import omitEmptyMiddleware from './middleware/omitEmptyMiddleware';
 
 
-import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
+import {errorCatch, ErrorException, NOT_FOUND} from '@azteam/error';
 
 
 function omitItem(item, guard) {
@@ -32,12 +31,23 @@ function omitItem(item, guard) {
 
 
 class ApiServer {
-    constructor() {
+
+    static jwtSign(payload, mTTL = 15) {
+        return jwt.sign({
+            ...payload,
+            exp: Math.floor(Date.now() / 1000) + (60 * mTTL),
+        }, process.env.SECRET_KEY);
+    }
+
+
+    constructor(currentDir = '') {
+
         this.middlewares = [];
-        this.controllers = {};
-        this.controllersMiddlewares = [];
+        this.controllers = [];
         this.whiteList = [];
         this.debug = process.env.NODE_ENV === 'development';
+
+        this.initController(currentDir);
     }
 
 
@@ -46,12 +56,6 @@ class ApiServer {
         return this;
     }
 
-    jwtSign(payload, mTTL = 15) {
-        return jwt.sign({
-            ...payload,
-            exp: Math.floor(Date.now() / 1000) + (60 * mTTL),
-        }, process.env.SECRET_KEY);
-    }
 
     jwtDecode(token) {
         return jwt.decode(token);
@@ -67,42 +71,40 @@ class ApiServer {
         return this;
     }
 
-    addMiddleware(middleware) {
-        controllers.map(function(controller) {
-            this.middlewares.push(middleware);
-        }, this);
+    addController(name, version, controller) {
+        this.controllers.push({
+            name,
+            version,
+            controller
+        });
         return this;
     }
 
-    addController(name, controller) {
-        this.controllers[name] = controller;
-        return this;
-    }
+    initController(apiDir) {
+        if(apiDir){
+            const controllerDirs = fs.readdirSync(apiDir);
 
-    addControllersByPath(controllersPath) {
-        const controllerFiles = fs.readdirSync(controllersPath);
-        for (const fileName of controllerFiles) {
-            if (fileName.includes('controller.js')) {
-                const controller = require(`${controllersPath}/${fileName}`).default;
-                this.addController(path.basename(fileName, '.controller.js'), controller);
+            for (const dirName of controllerDirs) {
+                if (fs.statSync(`${apiDir}/${dirName}`).isDirectory()) {
+                    const versionDirs = fs.readdirSync(`${apiDir}/${dirName}`);
+
+                    for (const versionName of versionDirs) {
+                        const controller = require(`${apiDir}/${dirName}/${versionName}/controller`).default;
+                        this.addController(dirName, versionName, controller);
+                    }
+                }
             }
         }
         return this;
     }
 
-    addMiddlewareToControllers(middleware, controllers) {
-        controllers.map(function(controller) {
-            this.controllersMiddlewares.push({
-                controller,
-                middleware
-            });
-        }, this);
-
+    addGlobalMiddleware(middleware) {
+        this.middlewares.push(middleware);
         return this;
     }
 
 
-    start(port) {
+    startPort(port) {
         if (!_.isEmpty(this.controllers)) {
             const SET_COOKIES_OPTIONS = {
                 domain: process.env.DOMAIN,
@@ -126,7 +128,7 @@ class ApiServer {
             }));
 
             app.use(methodOverride());
-            app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
+            app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
             app.use(bodyParser.json({}));
 
             app.set('trust proxy', 1);
@@ -158,20 +160,19 @@ class ApiServer {
             });
 
 
-            app.get('/robots.txt', function(req, res) {
+            app.get('/robots.txt', function (req, res) {
                 res.type('text/plain');
                 res.send('User-agent: *\nDisallow: /');
             });
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
-            app.use(async function(req, res, next) {
+            app.use(async function (req, res, next) {
 
-
-                res.error = function(code, errors = []) {
+                res.error = function (code, errors = []) {
                     throw new ErrorException(code, errors);
                 }
 
-                res.success = function(data = {}, guard = [], allows = []) {
+                res.success = function (data = {}, guard = [], allows = []) {
                     guard = [
                         ...guard,
                         '__v',
@@ -218,12 +219,12 @@ class ApiServer {
                     });
                 };
 
-                res.cleanCookie = function(data) {
+                res.cleanCookie = function (data) {
                     _.map(data, (name) => {
                         res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
                     });
                 }
-                res.addCookie = function(data) {
+                res.addCookie = function (data) {
                     _.map(data, (value, key) => {
                         res.cookie(key, value, SET_COOKIES_OPTIONS);
                     });
@@ -232,34 +233,26 @@ class ApiServer {
             });
 
             const msg = [];
-            _.map(this.controllers, (controller, name) => {
+            _.map(this.controllers, (obj) => {
+                const controller = obj.controller;
                 _.map(controller, (item, key) => {
-                    const splitName = name.split('.');
-                    item.path = splitName[1] ? `/${splitName[1]}${item.path}` : item.path;
+                    item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
 
                     msg.push({
-                        controller: name,
+                        controller: obj.name,
+                        version: obj.version,
                         type: item.type,
                         method: key,
                         path: item.path,
                     });
-
-                    let middlewares = [];
-
-
-                    const mid = _.find(this.controllersMiddlewares, (item) => item.controller === splitName[0] || item.controller === '*');
-
-                    if (mid) {
-                        middlewares.push(mid.middleware);
-                    }
-
-                    app[item.type.toLowerCase()](item.path, ...middlewares, ...item.method);
+                    
+                    app[item.type.toLowerCase()](item.path, ...item.method);
                 });
             });
-            console.info("\r\n");
+
             console.table(msg);
 
-            app.get('/cors/:hash', function(req, res) {
+            app.get('/cors/:hash', function (req, res) {
                 const cookies = JSON.parse(decryptAES(req.params.hash, process.env.SECRET_KEY));
                 res.addCookie(cookies);
                 return res.success('welcome');
@@ -288,7 +281,7 @@ class ApiServer {
                     this.callbackError(error);
                 }
 
-                return res.status(error.status).json({ success: false, errors: error.errors });
+                return res.status(error.status).json({success: false, errors: error.errors});
             });
 
             const server = http.Server(app);
@@ -344,4 +337,4 @@ class ApiServer {
     }
 }
 
-export default new ApiServer;
+export default ApiServer;
