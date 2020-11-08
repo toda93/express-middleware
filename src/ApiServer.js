@@ -11,9 +11,10 @@ import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
 import { decryptAES, encryptAES } from '@azteam/crypto';
+
+
 import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
 
-import omitEmptyMiddleware from './middleware/omitEmptyMiddleware';
 
 function omitItem(item, guard) {
     if (item.toJSON) {

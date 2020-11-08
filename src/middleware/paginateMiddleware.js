@@ -1,4 +1,22 @@
-import omitEmpty from 'omit-empty';
+function omitData(data) {
+    Object.keys(data).map(function(key, index) {
+        let value = data[key];
+            if (typeof value === 'string') {
+                value = value.trim();
+                if (value === '' || value === 'NaN' || value === 'null' || value === 'undefined') {
+                    delete data[key];
+                } else {
+                    data[key] = value;
+                }
+            } else {
+                if (value === null || value === undefined || Number.isNaN(value)) {
+                    delete data[key];
+                }
+            }
+    });
+    return data;
+}
+
 
 export default (options = {}) => {
     options = {
@@ -13,9 +31,10 @@ export default (options = {}) => {
     };
 
     return async (req, res, next) => {        
-        req.query = omitEmpty(req.body);
+        req.query = omitData(req.query);
 
-        
+
+
         req.resOptions = options;
         req.paginate = {
             limit: options.limit

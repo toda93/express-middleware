@@ -1,6 +1,6 @@
 {
     "name": "@azteam/express",
-    "version": "1.2.25",
+    "version": "1.2.26",
     "description": "",
     "main": "src/index.js",
     "repository": {
@@ -37,7 +37,6 @@
         "helmet": "3.21.2",
         "jsonwebtoken": "8.2.1",
         "method-override": "3.0.0",
-        "morgan": "1.9.0",
-        "omit-empty": "1.0.0"
+        "morgan": "1.9.0"
     }
 }
