@@ -1,3 +1,5 @@
+import omitEmpty from 'omit-empty';
+
 export default (options = {}) => {
     options = {
         limit: 20,
@@ -10,7 +12,10 @@ export default (options = {}) => {
         ...options
     };
 
-    return async (req, res, next) => {
+    return async (req, res, next) => {        
+        req.query = omitEmpty(req.body);
+
+        
         req.resOptions = options;
         req.paginate = {
             limit: options.limit
