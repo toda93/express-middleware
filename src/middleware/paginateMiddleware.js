@@ -1,18 +1,18 @@
 function omitData(data) {
     Object.keys(data).map(function(key, index) {
         let value = data[key];
-            if (typeof value === 'string') {
-                value = value.trim();
-                if (value === '' || value === 'NaN' || value === 'null' || value === 'undefined') {
-                    delete data[key];
-                } else {
-                    data[key] = value;
-                }
+        if (typeof value === 'string') {
+            value = value.trim();
+            if (value === '' || value === 'NaN' || value === 'null' || value === 'undefined') {
+                delete data[key];
             } else {
-                if (value === null || value === undefined || Number.isNaN(value)) {
-                    delete data[key];
-                }
+                data[key] = value;
             }
+        } else {
+            if (value === null || value === undefined || Number.isNaN(value)) {
+                delete data[key];
+            }
+        }
     });
     return data;
 }
@@ -30,10 +30,8 @@ export default (options = {}) => {
         ...options
     };
 
-    return async (req, res, next) => {        
+    return async (req, res, next) => {
         req.query = omitData(req.query);
-
-
 
         req.resOptions = options;
         req.paginate = {
@@ -44,13 +42,13 @@ export default (options = {}) => {
             delete req.query.limit;
 
         }
-        if (req.query.page) {
-            req.paginate.page = Number(req.query.page);
-            req.paginate.offset = (req.paginate.page - 1) * req.paginate.limit;
+      
+        req.paginate.page = req.query.page ? Number(req.query.page) : 1;
+        req.paginate.offset = (req.paginate.page - 1) * req.paginate.limit;
 
-            delete req.query.page;
-        }
-       
+        delete req.query.page;
+
+
         if (req.query.sort_by && options.sortFields.includes(req.query.sort_by)) {
             req.paginate.sort = {
                 [req.query.sort_by]: req.query.sort_type === 'asc' ? 'asc' : 'desc'
