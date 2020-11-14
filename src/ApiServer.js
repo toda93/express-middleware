@@ -162,51 +162,50 @@ class ApiServer {
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
             app.use(async function(req, res, next) {
-
                 res.error = function(code, errors = []) {
                     throw new ErrorException(code, errors);
                 }
 
                 res.success = function(data = {}, guard = [], allows = []) {
-                    guard = [
-                        ...guard,
-                        '__v',
-                        '_id',
-                        // 'status',
-                        'deleted_at',
-                        'updated_at',
-                        // 'created_at',
-                        'created_id',
-                        // 'modified_at',
-                        'modified_id'
-                    ];
-
-                    if (_.isArray(data) || data.docs) {
+                    if (data) {
                         guard = [
                             ...guard,
-                            'metadata_disable',
-                            'metadata_title',
-                            'metadata_keywords',
-                            'metadata_description',
-                            'metadata_image_url',
+                            '__v',
+                            '_id',
+                            'deleted_at',
+                            'updated_at',
+                            'created_id',
+                            'modified_id'
                         ];
-                    }
 
-                    guard = _.difference(guard, allows);
+                        if (_.isArray(data) || data.docs) {
+                            guard = [
+                                ...guard,
+                                'metadata_disable',
+                                'metadata_title',
+                                'metadata_keywords',
+                                'metadata_description',
+                                'metadata_image_url',
+                            ];
+                        }
 
-                    if (_.isArray(data)) {
-                        data = _.map(data, item => {
-                            return omitItem(item, guard);
-                        });
-                    } else if (_.isObject(data)) {
-                        if (data.docs) {
-                            data.docs = _.map(data.docs, item => {
+                        guard = _.difference(guard, allows);
+
+                        if (_.isArray(data)) {
+                            data = _.map(data, item => {
                                 return omitItem(item, guard);
                             });
-                        } else {
-                            data = omitItem(data, guard);
+                        } else if (_.isObject(data)) {
+                            if (data.docs) {
+                                data.docs = _.map(data.docs, item => {
+                                    return omitItem(item, guard);
+                                });
+                            } else {
+                                data = omitItem(data, guard);
+                            }
                         }
                     }
+
                     return res.json({
                         success: true,
                         data,
