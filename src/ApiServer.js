@@ -162,6 +162,13 @@ class ApiServer {
             app.get('/favicon.ico', (req, res) => res.status(204).json({}));
 
             app.use(async function(req, res, next) {
+                req.trackDevice = {
+                    ip: req.ip,
+                    device: req.get('X-DEVICE') || req.get('User-Agent'),
+                    os: req.get('X-OS') || 'web'
+                }
+
+
                 res.error = function(code, errors = []) {
                     throw new ErrorException(code, errors);
                 }
