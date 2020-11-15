@@ -165,7 +165,8 @@ class ApiServer {
                 req.trackDevice = {
                     ip: req.ip,
                     device: req.get('X-DEVICE') || req.get('User-Agent'),
-                    os: req.get('X-OS') || 'web'
+                    device_id: req.get('X-DEVICE-ID') || 'web',
+                    os: req.get('X-OS') || 'web',
                 }
 
 
