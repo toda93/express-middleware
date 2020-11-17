@@ -127,7 +127,7 @@ class ApiServer {
 
             app.use(methodOverride());
             app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
-            app.use(bodyParser.json({}));
+            app.use(bodyParser.json({limit: '5mb'}));
 
             app.set('trust proxy', 1);
 
