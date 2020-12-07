@@ -11,12 +11,20 @@ import _ from 'lodash';
 import 'express-async-errors';
 import jwt from 'jsonwebtoken';
 import { encryptAES, decryptAES } from '@azteam/crypto';
-
-
-const morgan = require('morgan');
+import morgan from 'morgan';
 
 import { ErrorException, errorCatch, NOT_FOUND } from '@azteam/error';
 
+
+function omitItem(item, guard) {
+    if (item.toJSON) {
+        item = item.toJSON();
+    }
+    if (_.isObject(item)) {
+        return _.omit(item, guard);
+    }
+    return item;
+}
 
 class SocketServer {
     
