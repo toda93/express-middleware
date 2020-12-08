@@ -9,10 +9,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
-import jwt from 'jsonwebtoken';
 import { decryptAES, encryptAES } from '@azteam/crypto';
-
-
 import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
 
 
@@ -29,15 +26,6 @@ function omitItem(item, guard) {
 
 
 class ApiServer {
-
-    static jwtSign(payload, mTTL = 15) {
-        return jwt.sign({
-            ...payload,
-            exp: Math.floor(Date.now() / 1000) + (60 * mTTL),
-        }, process.env.SECRET_KEY);
-    }
-
-
     constructor(currentDir = '') {
 
         this.middlewares = [];
@@ -52,11 +40,6 @@ class ApiServer {
     setCallbackError(callback = null) {
         this.callbackError = callback;
         return this;
-    }
-
-
-    jwtDecode(token) {
-        return jwt.decode(token);
     }
 
     setWhiteList(whiteList) {
@@ -258,17 +241,7 @@ class ApiServer {
 
             console.table(msg);
 
-            app.get('/cors/:hash', function(req, res) {
-                const cookies = JSON.parse(decryptAES(req.params.hash, process.env.SECRET_KEY));
-                res.addCookie(cookies);
-                return res.success('welcome');
-            });
-
             app.all('/', async (req, res) => {
-                if (req.query.host && WHITE_LIST.some(re => req.query.host.match(re))) {
-                    const hash = encryptAES(JSON.stringify(req.signedCookies), process.env.SECRET_KEY);
-                    return res.redirect(req.query.host + '/cors/' + hash);
-                }
                 return res.success('welcome');
             });
 
