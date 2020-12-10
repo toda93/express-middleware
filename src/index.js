@@ -1,4 +1,5 @@
 import ApiServer from './ApiServer';
+import SocketServer from './SocketServer';
 
 import signMiddleware from './middleware/signMiddleware';
 import etagMiddleware from './middleware/etagMiddleware';
@@ -13,6 +14,7 @@ import limitRequestMiddleware from './middleware/limitRequestMiddleware';
 
 export {
     ApiServer,
+    SocketServer,
 
     signMiddleware,
     etagMiddleware,
