@@ -117,18 +117,12 @@ class SocketServer {
                         nsp.use(wrap(middleware));
                     });
 
-                    _.map(item.events, (event, key) => {
-                        nsp.on(key, event);
-
-                    });
-
-
+                    nsp.on('connection', item.connection);
                     msg.push({
                         controller: obj.name,
                         version: obj.version,
                         path: item.path,
                     });
-
                 });
             });
 
