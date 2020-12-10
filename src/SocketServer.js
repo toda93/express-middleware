@@ -5,8 +5,6 @@ import socketIO from 'socket.io';
 import helmet from 'helmet';
 import _ from 'lodash';
 import 'express-async-errors';
-import { decryptAES, encryptAES } from '@azteam/crypto';
-import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
 
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
@@ -38,6 +36,33 @@ class SocketServer {
         return this;
     }
 
+    addController(name, version, controller) {
+        this.controllers.push({
+            name,
+            version,
+            controller
+        });
+        return this;
+    }
+
+    initController(apiDir) {
+        if (apiDir) {
+            const controllerDirs = fs.readdirSync(apiDir);
+
+            for (const dirName of controllerDirs) {
+                if (fs.statSync(`${apiDir}/${dirName}`).isDirectory()) {
+                    const versionDirs = fs.readdirSync(`${apiDir}/${dirName}`);
+
+                    for (const versionName of versionDirs) {
+                        const controller = require(`${apiDir}/${dirName}/${versionName}/controller`).default;
+                        this.addController(dirName, versionName, controller);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
     addGlobalMiddleware(middleware) {
         this.middlewares.push(middleware);
         return this;
@@ -49,11 +74,6 @@ class SocketServer {
             const WHITE_LIST = this.whiteList;
 
             const server = http.Server(express());
-
-            io.use(wrap(helmet({
-                frameguard: false
-            })));
-
 
             const io = socketIO(server, {
                 cors: {
@@ -74,10 +94,45 @@ class SocketServer {
                 }
             });
 
+            io.use(wrap(helmet({
+                frameguard: false
+            })));
+
 
             _.map(this.middlewares, (middleware) => {
-                io.use(middleware);
+                io.use(wrap(middleware));
             });
+
+
+            const msg = [];
+            _.map(this.controllers, (obj) => {
+                const controller = obj.controller;
+                
+                _.map(controller, (item, key) => {
+                    item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
+                    
+                    const nsp = io.of(item.path);
+
+                    _.map(item.middlewares, (middleware) => {
+                        nsp.use(wrap(middleware));
+                    });
+
+                    nsp.on('connection', item.method);
+
+
+
+                    msg.push({
+                        controller: obj.name,
+                        version: obj.version,
+                        method: key,
+                        path: item.path,
+                    });
+                    
+                });
+            });
+
+            console.table(msg);
+
 
 
             server.on('listening', () => {
@@ -116,6 +171,18 @@ class SocketServer {
         }
         return null;
     }
+    setAlertCallback(callback) {
+        this.alertCallback = callback;
+        return this;
+    }
+
+    _alert(status, msg) {
+        if (typeof this.alertCallback === 'function') {
+            this.alertCallback(status, msg);
+        } else {
+            console.log(status, msg);
+        }
+    }
 }
 
-export default new SocketServer;
+export default SocketServer;
