@@ -107,27 +107,28 @@ class SocketServer {
             const msg = [];
             _.map(this.controllers, (obj) => {
                 const controller = obj.controller;
-                
+
                 _.map(controller, (item, key) => {
                     item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
-                    
+
                     const nsp = io.of(item.path);
 
                     _.map(item.middlewares, (middleware) => {
                         nsp.use(wrap(middleware));
                     });
 
-                    nsp.on('connection', item.method);
+                    _.map(item.events, (event, key) => {
+                        nsp.on(key, event);
 
+                    });
 
 
                     msg.push({
                         controller: obj.name,
                         version: obj.version,
-                        method: key,
                         path: item.path,
                     });
-                    
+
                 });
             });
 
