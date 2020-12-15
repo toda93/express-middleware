@@ -75,9 +75,18 @@ class SocketServer {
 
             const server = http.Server(express());
 
+
             const io = socketIO(server, {
                 cors: {
                     credentials: true,
+                    cookie: {
+                        domain: process.env.DOMAIN,
+                        secure: process.env.NODE_ENV !== 'development',
+                        sameSite: 'Lax',
+                        httpOnly: true,
+                        signed: true,
+                        maxAge: 86400000 * 365 // 1 year
+                    },
                     origin: (origin, callback) => {
                         if (
                             !origin || !WHITE_LIST.length ||
