@@ -4,16 +4,19 @@ import express from 'express';
 import socketIO from 'socket.io';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import redisAdapter from 'socket.io-redis';
 import _ from 'lodash';
 
-import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './cookie';
+import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './cookie';
 
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
 class SocketServer {
 
-    constructor(currentDir = '') {
+    constructor(currentDir = '', options = {
+        redisConfig: null
+    }) {
 
         this.middlewares = [];
         this.controllers = [];
@@ -104,6 +107,9 @@ class SocketServer {
                 }
             });
 
+            if (this.options.redisConfig) {
+                io.adapter(redisAdapter(this.options.redisConfig));
+            }
 
             const msg = [];
             _.map(this.controllers, (obj) => {
@@ -117,7 +123,7 @@ class SocketServer {
                     const middlewares = [...this.middlewares, ...item.middlewares];
 
                     nsp.use(wrap(bodyParser.urlencoded({ limit: '5mb', extended: true })));
-                    nsp.use(wrap(bodyParser.json({limit: '5mb'})));
+                    nsp.use(wrap(bodyParser.json({ limit: '5mb' })));
                     nsp.use(wrap(cookieParser(process.env.SECRET_KEY)));
 
                     _.map(middlewares, (middleware) => {
