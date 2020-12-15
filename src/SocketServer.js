@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import _ from 'lodash';
 
-import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './config';
+import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './cookie';
 
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);

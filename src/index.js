@@ -9,7 +9,6 @@ import limitRequestMiddleware from './middleware/limitRequestMiddleware';
 
 
 import SocketServer from './SocketServer';
-import authSocketMiddleware from './socketMiddleware/authSocketMiddleware';
 
 
 export {
@@ -23,5 +22,4 @@ export {
     limitRequestMiddleware,
 
     SocketServer,
-    authSocketMiddleware,
 }

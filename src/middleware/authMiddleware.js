@@ -1,5 +1,8 @@
 import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
+import Cookies from 'universal-cookie';
+
+import {CLEAR_COOKIES_OPTIONS} from './cookie';
 
 
 function systemLogin(userData = null) {
@@ -11,6 +14,9 @@ function systemLogin(userData = null) {
     }
     return user;
 }
+
+const cookies = new Cookies();
+
 
 export default (cb_refresh_token, cb_login_api) => {
     return async (req, res, next) => {
@@ -51,7 +57,8 @@ export default (cb_refresh_token, cb_login_api) => {
                     if (jwt_data) {
                         req.user = jwt_data;
                     } else {
-                        res.cleanCookie(['access_token', 'refresh_token']);
+                        cookie.remove('access_token', CLEAR_COOKIES_OPTIONS);
+                        cookie.remove('refresh_token', CLEAR_COOKIES_OPTIONS);
                     }
                     return next();
                 });
