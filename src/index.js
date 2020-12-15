@@ -9,7 +9,7 @@ import limitRequestMiddleware from './middleware/limitRequestMiddleware';
 
 
 import SocketServer from './SocketServer';
-import authSocketMiddleware from './middleware/authSocketMiddleware';
+import authSocketMiddleware from './socketMiddleware/authSocketMiddleware';
 
 
 export {

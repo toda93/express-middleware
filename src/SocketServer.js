@@ -2,8 +2,14 @@ import fs from 'fs';
 import http from 'http';
 import express from 'express';
 import socketIO from 'socket.io';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import _ from 'lodash';
 
+import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './config';
+
+
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
 class SocketServer {
 
@@ -72,6 +78,7 @@ class SocketServer {
             const app = express();
             const server = http.Server(app);
 
+
             _.map(this.middlewares, (middleware) => {
                 app.use(middleware);
             });
@@ -80,14 +87,7 @@ class SocketServer {
             const io = socketIO(server, {
                 cors: {
                     credentials: true,
-                    cookie: {
-                        domain: process.env.DOMAIN,
-                        secure: process.env.NODE_ENV !== 'development',
-                        sameSite: 'Lax',
-                        httpOnly: true,
-                        signed: true,
-                        maxAge: 86400000 * 365 // 1 year
-                    },
+                    cookie: SET_COOKIES_OPTIONS,
                     origin: (origin, callback) => {
                         if (
                             !origin || !WHITE_LIST.length ||
@@ -114,7 +114,13 @@ class SocketServer {
 
                     const nsp = io.of(item.path);
 
-                    _.map(item.middlewares, (middleware) => {
+                    const middlewares = [...this.middlewares, ...item.middlewares];
+
+                    nsp.use(wrap(bodyParser.urlencoded({ limit: '5mb', extended: true })));
+                    nsp.use(wrap(bodyParser.json({limit: '5mb'})));
+                    nsp.use(wrap(cookieParser(process.env.SECRET_KEY)));
+
+                    _.map(middlewares, (middleware) => {
                         nsp.use(middleware);
                     });
 

@@ -12,6 +12,7 @@ import 'express-async-errors';
 import { decryptAES, encryptAES } from '@azteam/crypto';
 import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
 
+import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './config';
 
 function omitItem(item, guard) {
     if (item.toJSON) {
@@ -87,19 +88,7 @@ class ApiServer {
 
     startPort(port) {
         if (!_.isEmpty(this.controllers)) {
-            const SET_COOKIES_OPTIONS = {
-                domain: process.env.DOMAIN,
-                secure: process.env.NODE_ENV !== 'development',
-                sameSite: 'Lax',
-                httpOnly: true,
-                signed: true,
-                maxAge: 86400000 * 365 // 1 year
-            };
-
-            const CLEAR_COOKIES_OPTIONS = {
-                domain: process.env.DOMAIN
-            };
-
+            
             const WHITE_LIST = this.whiteList;
 
 

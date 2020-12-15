@@ -2,7 +2,6 @@ import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
 
 
-
 function systemLogin(userData = null) {
     let user = {};
     if (userData) {
@@ -13,19 +12,19 @@ function systemLogin(userData = null) {
     return user;
 }
 
-
-
-
-
 export default (cb_refresh_token, cb_login_api) => {
     return async (req, res, next) => {
-        if (req.headers['x-app-secret'] === process.env.SECRET_KEY) {
-            req.user = systemLogin(req.headers['x-app-user']);
-        } else {
-            let token = req.signedCookies.access_token;
 
-            if (req.headers.authorization && req.signedCookies.api_key != req.headers.authorization) {
-                token = req.headers.authorization;
+        const { headers, signedCookies } = req;
+
+
+        if (headers['x-app-secret'] === process.env.SECRET_KEY) {
+            req.user = systemLogin(headers['x-app-user']);
+        } else {
+            let token = signedCookies.access_token;
+
+            if (headers.authorization && signedCookies.api_key != headers.authorization) {
+                token = headers.authorization;
             }
 
             if (token) {
@@ -35,17 +34,16 @@ export default (cb_refresh_token, cb_login_api) => {
                         try {
                             let data = null;
                             if (error.name === 'TokenExpiredError') {
-                                if (req.signedCookies.refresh_token) {
-                                    data = await cb_refresh_token(req.signedCookies.refresh_token);
-                                } else if (req.signedCookies.api_key) {
-                                    data = await cb_login_api(req.signedCookies.api_key);
+                                if (signedCookies.refresh_token) {
+                                    data = await cb_refresh_token(signedCookies.refresh_token);
+                                } else if (signedCookies.api_key) {
+                                    data = await cb_login_api(signedCookies.api_key);
                                 }
                             } else if (error.name === 'JsonWebTokenError') {
                                 data = await cb_login_api(token);
                             }
 
                             if (data) {
-                                res.addCookie(data);
                                 jwt_data = jwt.decode(data.access_token);
                             }
                         } catch (e) {}
