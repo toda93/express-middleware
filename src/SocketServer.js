@@ -18,11 +18,12 @@ class SocketServer {
         redisConfig: null
     }) {
 
+
         this.middlewares = [];
         this.controllers = [];
         this.whiteList = [];
         this.debug = process.env.NODE_ENV === 'development';
-
+        this.options = options;
         this.initController(currentDir);
     }
 
