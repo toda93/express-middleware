@@ -121,7 +121,7 @@ class SocketServer {
                     nsp.use(wrap(cookieParser(process.env.SECRET_KEY)));
 
                     _.map(middlewares, (middleware) => {
-                        nsp.use(middleware);
+                        nsp.use(wrap(middleware));
                     });
 
                     nsp.on('connection', item.connection);
