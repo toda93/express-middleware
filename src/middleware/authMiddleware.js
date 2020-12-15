@@ -15,7 +15,7 @@ function systemLogin(userData = null) {
     return user;
 }
 
-const cookies = new Cookies();
+const cookie = new Cookies();
 
 
 export default (cb_refresh_token, cb_login_api) => {
