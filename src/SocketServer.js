@@ -124,7 +124,9 @@ class SocketServer {
                         nsp.use(wrap(middleware));
                     });
 
-                    nsp.on('connection', item.connection);
+                    nsp.on('connection', socket => {
+                        item.connection(io, socket)
+                    });
                     msg.push({
                         controller: obj.name,
                         version: obj.version,
