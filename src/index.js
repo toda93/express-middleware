@@ -1,6 +1,4 @@
 import ApiServer from './ApiServer';
-import SocketServer from './SocketServer';
-
 import signMiddleware from './middleware/signMiddleware';
 import etagMiddleware from './middleware/etagMiddleware';
 import authMiddleware from './middleware/authMiddleware';
@@ -10,17 +8,20 @@ import validateMiddleware from './middleware/validateMiddleware';
 import limitRequestMiddleware from './middleware/limitRequestMiddleware';
 
 
+import SocketServer from './SocketServer';
+import authSocketMiddleware from './middleware/authSocketMiddleware';
 
 
 export {
     ApiServer,
-    SocketServer,
-
     signMiddleware,
     etagMiddleware,
     paginateMiddleware,
     authMiddleware,
     roleMiddleware,
     validateMiddleware,
-    limitRequestMiddleware
+    limitRequestMiddleware,
+
+    SocketServer,
+    authSocketMiddleware,
 }

@@ -2,12 +2,8 @@ import fs from 'fs';
 import http from 'http';
 import express from 'express';
 import socketIO from 'socket.io';
-import helmet from 'helmet';
 import _ from 'lodash';
-import 'express-async-errors';
 
-
-const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
 class SocketServer {
 
@@ -73,7 +69,12 @@ class SocketServer {
 
             const WHITE_LIST = this.whiteList;
 
-            const server = http.Server(express());
+            const app = express();
+            const server = http.Server(app);
+
+            _.map(this.middlewares, (middleware) => {
+                app.use(middleware);
+            });
 
 
             const io = socketIO(server, {
@@ -103,15 +104,6 @@ class SocketServer {
                 }
             });
 
-            io.use(wrap(helmet({
-                frameguard: false
-            })));
-
-
-            _.map(this.middlewares, (middleware) => {
-                io.use(wrap(middleware));
-            });
-
 
             const msg = [];
             _.map(this.controllers, (obj) => {
@@ -123,7 +115,7 @@ class SocketServer {
                     const nsp = io.of(item.path);
 
                     _.map(item.middlewares, (middleware) => {
-                        nsp.use(wrap(middleware));
+                        nsp.use(middleware);
                     });
 
                     nsp.on('connection', item.connection);
@@ -136,7 +128,6 @@ class SocketServer {
             });
 
             console.table(msg);
-
 
 
             server.on('listening', () => {
@@ -175,6 +166,7 @@ class SocketServer {
         }
         return null;
     }
+
     setAlertCallback(callback) {
         this.alertCallback = callback;
         return this;
