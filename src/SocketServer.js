@@ -125,7 +125,7 @@ class SocketServer {
                     });
 
                     nsp.on('connection', socket => {
-                        item.connection(io, socket)
+                        item.connection(nsp, socket);
                     });
                     msg.push({
                         controller: obj.name,
