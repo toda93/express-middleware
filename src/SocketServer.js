@@ -5,6 +5,7 @@ import socketIO from 'socket.io';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import redisAdapter from 'socket.io-redis';
+import cors from 'cors';
 import _ from 'lodash';
 
 import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './cookie';
@@ -79,29 +80,9 @@ class SocketServer {
 
             const WHITE_LIST = this.whiteList;
 
-            const app = express();
-            const server = http.Server(app);
-
-
-            _.map(this.middlewares, (middleware) => {
-                app.use(middleware);
-            });
-
+            const server = http.Server(express());
 
             const io = socketIO(server, {
-                cors: {
-                    credentials: true,
-                    cookie: SET_COOKIES_OPTIONS,
-                    origin: (origin, callback) => {
-                        if (
-                            !origin || !WHITE_LIST.length ||
-                            WHITE_LIST.some(re => origin.endsWith(re))) {
-                            callback(null, true)
-                        } else {
-                            callback(new Error('Not allowed by CORS'));
-                        }
-                    },
-                },
                 wsEngine: 'eiows',
                 perMessageDeflate: {
                     threshold: 32768
@@ -122,6 +103,20 @@ class SocketServer {
                     const nsp = io.of(item.path);
 
                     const middlewares = [...this.middlewares, ...item.middlewares];
+
+
+                    nsp.use(wrap(cors({
+                        credentials: true,
+                        origin: (origin, callback) => {
+                            if (
+                                !origin || !WHITE_LIST.length ||
+                                WHITE_LIST.some(re => origin.endsWith(re))) {
+                                callback(null, true)
+                            } else {
+                                callback(new Error('Not allowed by CORS'));
+                            }
+                        },
+                    })));
 
                     nsp.use(wrap(bodyParser.urlencoded({ limit: '5mb', extended: true })));
                     nsp.use(wrap(bodyParser.json({ limit: '5mb' })));
