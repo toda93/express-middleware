@@ -35,9 +35,9 @@ export default (type, rules) => {
         /* validate field */
         const v = new Validator();
         const errors = v.validate(reqData, rules);
-        
+
         if (Array.isArray(errors)) {
-            throw new ErrorException(VALIDATE, errors);
+            return next(new ErrorException(VALIDATE, errors));
         }
         return next();
     }

@@ -12,6 +12,6 @@ export default (secretKey, mTimeout = 5) => {
                 return next();
             }
         }
-        throw new ErrorException(SIGNATURE_FAILED);
+        return next(new ErrorException(SIGNATURE_FAILED));
     }
 }
