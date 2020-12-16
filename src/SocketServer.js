@@ -86,6 +86,18 @@ class SocketServer {
                 wsEngine: 'eiows',
                 perMessageDeflate: {
                     threshold: 32768
+                },
+                cors: {
+                    credentials: true,
+                    origin: (origin, callback) => {
+                        if (
+                            !origin || !WHITE_LIST.length ||
+                            WHITE_LIST.some(re => origin.endsWith(re))) {
+                            callback(null, true)
+                        } else {
+                            callback(new Error('Not allowed by CORS'));
+                        }
+                    },
                 }
             });
 
@@ -103,20 +115,6 @@ class SocketServer {
                     const nsp = io.of(item.path);
 
                     const middlewares = [...this.middlewares, ...item.middlewares];
-
-
-                    nsp.use(wrap(cors({
-                        credentials: true,
-                        origin: (origin, callback) => {
-                            if (
-                                !origin || !WHITE_LIST.length ||
-                                WHITE_LIST.some(re => origin.endsWith(re))) {
-                                callback(null, true)
-                            } else {
-                                callback(new Error('Not allowed by CORS'));
-                            }
-                        },
-                    })));
 
                     nsp.use(wrap(bodyParser.urlencoded({ limit: '5mb', extended: true })));
                     nsp.use(wrap(bodyParser.json({ limit: '5mb' })));
