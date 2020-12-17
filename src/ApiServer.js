@@ -242,7 +242,7 @@ class ApiServer {
                 const error = errorCatch(e);
 
                 if (error.errors[0].code === UNKNOWN) {
-                    console.error(e);
+                    console.error(req.originalUrl, e);
                 }
 
                 if (this.callbackError) {
