@@ -89,7 +89,7 @@ class SocketServer {
                 },
                 cors: {
                     credentials: true,
-                    origin: (origin, callback) => {
+                    origin: function(origin, callback) {
                         if (
                             !origin || !WHITE_LIST.length ||
                             WHITE_LIST.some(re => origin.endsWith(re))) {

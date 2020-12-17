@@ -9,8 +9,8 @@ import morgan from 'morgan';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
-import { decryptAES, encryptAES } from '@azteam/crypto';
-import { errorCatch, ErrorException, NOT_FOUND } from '@azteam/error';
+import {decryptAES, encryptAES} from '@azteam/crypto';
+import {errorCatch, ErrorException, NOT_FOUND, UNKNOWN} from '@azteam/error';
 
 import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './cookie';
 
@@ -88,7 +88,7 @@ class ApiServer {
 
     startPort(port) {
         if (!_.isEmpty(this.controllers)) {
-            
+
             const WHITE_LIST = this.whiteList;
 
 
@@ -99,7 +99,7 @@ class ApiServer {
 
             app.use(methodOverride());
             app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
-            app.use(bodyParser.json({limit: '5mb'}));
+            app.use(bodyParser.json({ limit: '5mb' }));
 
             app.set('trust proxy', 1);
 
@@ -108,7 +108,7 @@ class ApiServer {
 
             app.use(cors({
                 credentials: true,
-                origin: (origin, callback) => {
+                origin: function(origin, callback) {
                     if (
                         !origin || !WHITE_LIST.length ||
                         WHITE_LIST.some(re => origin.endsWith(re))) {
@@ -241,8 +241,8 @@ class ApiServer {
             app.use((e, req, res, next) => {
                 const error = errorCatch(e);
 
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(error.errors);
+                if (error.errors[0].code === UNKNOWN) {
+                    console.error(e);
                 }
 
                 if (this.callbackError) {
