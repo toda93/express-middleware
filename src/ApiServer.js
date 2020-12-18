@@ -9,10 +9,10 @@ import morgan from 'morgan';
 import cors from 'cors';
 import _ from 'lodash';
 import 'express-async-errors';
-import {decryptAES, encryptAES} from '@azteam/crypto';
-import {errorCatch, ErrorException, NOT_FOUND, UNKNOWN} from '@azteam/error';
+import { decryptAES, encryptAES } from '@azteam/crypto';
+import { errorCatch, ErrorException, NOT_FOUND, UNKNOWN } from '@azteam/error';
 
-import {SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS} from './cookie';
+import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './cookie';
 
 function omitItem(item, guard) {
     if (item.toJSON) {
@@ -114,7 +114,7 @@ class ApiServer {
                         WHITE_LIST.some(re => origin.endsWith(re))) {
                         callback(null, true)
                     } else {
-                        callback(new Error('Not allowed by CORS'));
+                        callback(new Error(`${origin} Not allowed by CORS`));
                     }
                 },
             }));

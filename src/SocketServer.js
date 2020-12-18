@@ -95,7 +95,7 @@ class SocketServer {
                             WHITE_LIST.some(re => origin.endsWith(re))) {
                             callback(null, true)
                         } else {
-                            callback(new Error('Not allowed by CORS'));
+                            callback(new Error(`${origin} Not allowed by CORS`));
                         }
                     },
                 }
@@ -128,7 +128,7 @@ class SocketServer {
                         nsp.use(wrap(middleware));
                     });
 
-                
+
                     if (item.connection) {
                         nsp.on('connection', socket => {
                             item.connection(nsp, socket);
