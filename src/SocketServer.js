@@ -113,6 +113,10 @@ class SocketServer {
                     item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
 
                     const nsp = io.of(item.path);
+                    if (item.singleton) {
+                        item.singleton(nsp);
+                    }
+
 
                     const middlewares = [...this.middlewares, ...item.middlewares];
 
@@ -124,9 +128,14 @@ class SocketServer {
                         nsp.use(wrap(middleware));
                     });
 
-                    nsp.on('connection', socket => {
-                        item.connection(nsp, socket);
-                    });
+                
+                    if (item.connection) {
+                        nsp.on('connection', socket => {
+                            item.connection(nsp, socket);
+                        });
+                    }
+
+
                     msg.push({
                         controller: obj.name,
                         version: obj.version,
