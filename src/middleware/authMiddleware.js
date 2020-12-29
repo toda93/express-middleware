@@ -2,7 +2,7 @@ import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
 import Cookies from 'universal-cookie';
 
-import {CLEAR_COOKIES_OPTIONS} from '../cookie';
+import { CLEAR_COOKIES_OPTIONS } from '../cookie';
 
 
 function systemLogin(userData = null) {
@@ -18,8 +18,8 @@ function systemLogin(userData = null) {
 const cookie = new Cookies();
 
 
-export default (cb_refresh_token, cb_login_api) => {
-    return async (req, res, next) => {
+export default function(cb_refresh_token, cb_login_api) {
+    return async function(req, res, next) {
 
         const { headers, signedCookies } = req;
 

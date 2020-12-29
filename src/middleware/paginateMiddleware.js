@@ -18,7 +18,7 @@ function omitData(data) {
 }
 
 
-export default (options = {}) => {
+export default function(options = {}) {
     options = {
         limit: 20,
         searchFields: [],
@@ -30,7 +30,7 @@ export default (options = {}) => {
         ...options
     };
 
-    return async (req, res, next) => {
+    return async function(req, res, next) {
         req.query = omitData(req.query);
 
         req.resOptions = options;
@@ -42,7 +42,7 @@ export default (options = {}) => {
             delete req.query.limit;
 
         }
-      
+
         req.paginate.page = req.query.page ? Number(req.query.page) : 1;
         req.paginate.offset = (req.paginate.page - 1) * req.paginate.limit;
 

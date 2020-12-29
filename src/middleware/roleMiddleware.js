@@ -1,8 +1,8 @@
 import { ErrorException, UNAUTHORIZED, PERMISSION } from '@azteam/error';
 
 
-export default (roles = null, minLevel = 1) => {
-    return async (req, res, next) => {
+export default function(roles = null, minLevel = 1) {
+    return async function(req, res, next) {
         if (!req.user) {
             return next(new ErrorException(UNAUTHORIZED));
         }

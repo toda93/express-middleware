@@ -8,8 +8,8 @@ function floorToMinute(time, minutes) {
     return time;
 }
 
-export default (mTimeout = 5) => {
-    return async (req, res, next) => {
+export default function(mTimeout = 5) {
+    return async function(req, res, next) {
         if (req.method === 'GET') {
             const etag_hash = etag(req.url + floorToMinute(Math.floor(Date.now() / 1000), mTimeout));
             if (req.headers['if-none-match'] === etag_hash) {

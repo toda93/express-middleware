@@ -28,8 +28,8 @@ function omitData(data, inKeys = []) {
 
 
 
-export default (type, rules) => {
-    return async (req, res, next) => {
+export default function(type, rules) {
+    return async function(req, res, next) {
         const reqData = omitData(req[type], Object.keys(rules));
 
         /* validate field */
