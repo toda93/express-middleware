@@ -1,10 +1,10 @@
 import rateLimit from 'express-rate-limit';
-import {BLOCKED} from '@azteam/error';
+import { BLOCKED } from '@azteam/error';
 
-export default function limitRequest(max = 10) {
+export default function limitRequest(max = 10, seconds = 30) {
     return rateLimit({
         max,
-        windowMs: 30 * 1000, // 30 seconds
+        windowMs: seconds * 1000, // default 30 seconds
         message: {
             success: false,
             errors: [{
