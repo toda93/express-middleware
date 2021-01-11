@@ -114,7 +114,7 @@ class SocketServer {
 
                     const nsp = io.of(item.path);
                     if (item.singleton) {
-                        item.singleton(nsp);
+                        item.singleton(io);
                     }
 
 
@@ -131,7 +131,7 @@ class SocketServer {
 
                     if (item.connection) {
                         nsp.on('connection', socket => {
-                            item.connection(nsp, socket);
+                            item.connection(io, socket);
                         });
                     }
 
