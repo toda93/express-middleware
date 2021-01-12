@@ -101,10 +101,6 @@ class SocketServer {
                 }
             });
 
-            io.getNamespace = function(name) {
-                const nspName = io._nsps.keys().find(name => name.endsWith(name));
-                return io.of(nspName);
-            }
 
             if (this.options.redisConfig) {
                 io.adapter(redisAdapter(this.options.redisConfig));
