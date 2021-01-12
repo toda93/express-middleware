@@ -113,10 +113,6 @@ class SocketServer {
                     item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
 
                     const nsp = io.of(item.path);
-                    if (item.singleton) {
-                        item.singleton(io);
-                    }
-
 
                     const middlewares = [...this.middlewares, ...item.middlewares];
 
@@ -128,6 +124,10 @@ class SocketServer {
                         nsp.use(wrap(middleware));
                     });
 
+
+                    if (item.schedule) {
+                        item.schedule(io);
+                    }
 
                     if (item.connection) {
                         nsp.on('connection', socket => {
