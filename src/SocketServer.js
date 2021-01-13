@@ -115,7 +115,7 @@ class SocketServer {
 
                     const nsp = io.of(item.path);
 
-                    const middlewares = [...this.middlewares, ...item.middlewares];
+                    const middlewares = [...this.middlewares, ...(item.middlewares || [])];
 
                     nsp.use(wrap(bodyParser.urlencoded({ limit: '5mb', extended: true })));
                     nsp.use(wrap(bodyParser.json({ limit: '5mb' })));
