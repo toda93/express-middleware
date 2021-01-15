@@ -89,7 +89,7 @@ export default function(options = {}) {
         }
         if (req.query.keywords) {
             const arrKeywords = _.words(req.query.keywords);
-            const keywords = `"${arr.join('" "')}"`;
+            const keywords = `"${arrKeywords.join('" "')}"`;
 
             delete req.query.keywords;
 
