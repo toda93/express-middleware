@@ -1,3 +1,6 @@
+import _ from 'lodash';
+
+
 function omitData(data) {
     Object.keys(data).map(function(key, index) {
         let value = data[key];
@@ -85,13 +88,17 @@ export default function(options = {}) {
             }
         }
         if (req.query.keywords) {
+            const arrKeywords = _.words(req.query.keywords);
+            const keywords = `"${arr.join('" "')}"`;
+
+            delete req.query.keywords;
+
             req.query = {
                 ...req.query,
                 $text: {
-                    $search: req.query.keywords
+                    $search: keywords
                 }
             };
-            delete req.query.keywords;
         }
 
         return next();
