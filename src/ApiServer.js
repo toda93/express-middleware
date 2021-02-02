@@ -27,14 +27,17 @@ function omitItem(item, guard) {
 
 
 class ApiServer {
-    constructor(currentDir = '') {
-
+    constructor(currentDir = '', options = {}) {
+        this.options = options;
+        
         this.middlewares = [];
         this.controllers = [];
         this.whiteList = [];
         this.debug = process.env.NODE_ENV === 'development';
 
         this.initController(currentDir);
+
+
     }
 
 

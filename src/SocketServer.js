@@ -15,16 +15,16 @@ const wrap = middleware => (socket, next) => middleware(socket.request, {}, next
 
 class SocketServer {
 
-    constructor(currentDir = '', options = {
-        redisConfig: null
-    }) {
-
+    constructor(currentDir = '', options = {}) {
+        this.options = {
+            redisConfig: null,
+            ...options
+        };
 
         this.middlewares = [];
         this.controllers = [];
         this.whiteList = [];
         this.debug = process.env.NODE_ENV === 'development';
-        this.options = options;
         this.initController(currentDir);
     }
 
