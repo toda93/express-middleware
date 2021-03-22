@@ -1,4 +1,4 @@
-import * as CONSTANT from './constant';
+import {HTTP_METHOD, REQUEST_TYPE} from './constant';
 
 import ApiServer from './ApiServer';
 import signMiddleware from './middleware/signMiddleware';
@@ -14,15 +14,17 @@ import SocketServer from './SocketServer';
 
 
 export {
-	...CONSTANT,
+	HTTP_METHOD, 
+    REQUEST_TYPE,
+
     ApiServer,
+    SocketServer,
+
     signMiddleware,
     etagMiddleware,
     paginateMiddleware,
     authMiddleware,
     roleMiddleware,
     validateMiddleware,
-    limitRequestMiddleware,
-
-    SocketServer,
+    limitRequestMiddleware
 }
