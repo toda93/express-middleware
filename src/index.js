@@ -1,3 +1,5 @@
+import * as from CONSTANT './constant';
+
 import ApiServer from './ApiServer';
 import signMiddleware from './middleware/signMiddleware';
 import etagMiddleware from './middleware/etagMiddleware';
@@ -12,6 +14,7 @@ import SocketServer from './SocketServer';
 
 
 export {
+	...CONSTANT,
     ApiServer,
     signMiddleware,
     etagMiddleware,

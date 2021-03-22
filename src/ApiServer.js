@@ -12,7 +12,7 @@ import 'express-async-errors';
 import { decryptAES, encryptAES } from '@azteam/crypto';
 import { errorCatch, ErrorException, NOT_FOUND, UNKNOWN } from '@azteam/error';
 
-import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './cookie';
+import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './constant';
 
 function omitItem(item, guard) {
     if (item.toJSON) {

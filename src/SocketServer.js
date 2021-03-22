@@ -8,7 +8,7 @@ import redisAdapter from 'socket.io-redis';
 import cors from 'cors';
 import _ from 'lodash';
 
-import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './cookie';
+import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './constant';
 
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
