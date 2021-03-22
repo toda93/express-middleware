@@ -2,7 +2,7 @@ import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
 import Cookies from 'universal-cookie';
 
-import { CLEAR_COOKIES_OPTIONS } from '../contant';
+import { CLEAR_COOKIES_OPTIONS } from '../constant';
 
 
 function systemLogin(userData = null) {

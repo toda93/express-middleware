@@ -1,6 +1,6 @@
 import etag from 'etag';
 
-import { HTTP_GET } from '../contant';
+import { HTTP_GET } from '../constant';
 
 
 function floorToMinute(time, minutes) {
