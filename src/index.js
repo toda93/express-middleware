@@ -1,4 +1,4 @@
-import * as from CONSTANT './constant';
+import * as CONSTANT from './constant';
 
 import ApiServer from './ApiServer';
 import signMiddleware from './middleware/signMiddleware';
