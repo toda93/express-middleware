@@ -110,11 +110,10 @@ class ApiServer {
 
             if (!WHITE_LIST.length) {
                 app.use(cors({
-                        credentials: true,
-                        origin: true
-                    });
-                });
-            else {
+                    credentials: true,
+                    origin: true
+                }));
+            } else {
                 app.use(cors({
                     credentials: true,
                     origin: function(origin, callback) {
