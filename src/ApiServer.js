@@ -109,205 +109,206 @@ class ApiServer {
             app.use(cookieParser(process.env.SECRET_KEY));
 
             if (!WHITE_LIST.length) {
-                app.use(function(req, res, next) {
-                    res.header("Access-Control-Allow-Origin", "*");
-                    next();
-                });
-            } else {
                 app.use(cors({
-                    credentials: true,
-                    origin: function(origin, callback) {
-                        if (
-                            !origin ||
-                            WHITE_LIST.some(re => origin.endsWith(re))) {
-                            callback(null, true)
-                        } else {
-                            callback(new Error(`${origin} Not allowed by CORS`));
-                        }
-                    },
-                }));
-            }
-
-            if (this.debug) {
-                app.use(morgan('dev'));
-            }
-
-            app.get('/robots.txt', function(req, res) {
-                res.type('text/plain');
-                res.send('User-agent: *\nDisallow: /');
-            });
-            app.get('/favicon.ico', (req, res) => res.status(204).json({}));
-
-            app.use(async function(req, res, next) {
-                req.trackDevice = {
-                    ip: req.ip,
-                    device: req.get('X-DEVICE') || req.get('User-Agent'),
-                    device_id: req.get('X-DEVICE-ID') || 'web',
-                    os: req.get('X-OS') || 'web',
+                        credentials: true,
+                        origin: false
+                    });
                 }
-
-
-                res.error = function(code, errors = []) {
-                    throw new ErrorException(code, errors);
-                }
-
-                res.success = function(data = {}, guard = [], allows = []) {
-                    if (data) {
-                        guard = [
-                            ...guard,
-                            '__v',
-                            '_id',
-                            'deleted_at',
-                            'updated_at',
-                            'created_id',
-                            'modified_id'
-                        ];
-
-                        if (_.isArray(data) || data.docs) {
-                            guard = [
-                                ...guard,
-                                'metadata_disable',
-                                'metadata_title',
-                                'metadata_keywords',
-                                'metadata_description',
-                                'metadata_image_url',
-                            ];
-                        }
-
-                        guard = _.difference(guard, allows);
-
-                        if (_.isArray(data)) {
-                            data = _.map(data, item => {
-                                return omitItem(item, guard);
-                            });
-                        } else if (_.isObject(data)) {
-                            if (data.docs) {
-                                data.docs = _.map(data.docs, item => {
-                                    return omitItem(item, guard);
-                                });
+                else {
+                    app.use(cors({
+                        credentials: true,
+                        origin: function(origin, callback) {
+                            if (
+                                !origin ||
+                                WHITE_LIST.some(re => origin.endsWith(re))) {
+                                callback(null, true)
                             } else {
-                                data = omitItem(data, guard);
+                                callback(new Error(`${origin} Not allowed by CORS`));
                             }
-                        }
+                        },
+                    }));
+                }
+
+                if (this.debug) {
+                    app.use(morgan('dev'));
+                }
+
+                app.get('/robots.txt', function(req, res) {
+                    res.type('text/plain');
+                    res.send('User-agent: *\nDisallow: /');
+                });
+                app.get('/favicon.ico', (req, res) => res.status(204).json({}));
+
+                app.use(async function(req, res, next) {
+                    req.trackDevice = {
+                        ip: req.ip,
+                        device: req.get('X-DEVICE') || req.get('User-Agent'),
+                        device_id: req.get('X-DEVICE-ID') || 'web',
+                        os: req.get('X-OS') || 'web',
                     }
 
-                    return res.json({
-                        success: true,
-                        data,
-                        options: req.resOptions,
-                    });
-                };
 
-                res.cleanCookie = function(data) {
-                    _.map(data, (name) => {
-                        res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
-                    });
-                }
-                res.addCookie = function(data) {
-                    _.map(data, (value, key) => {
-                        res.cookie(key, value, SET_COOKIES_OPTIONS);
-                    });
-                }
-                next();
-            });
+                    res.error = function(code, errors = []) {
+                        throw new ErrorException(code, errors);
+                    }
 
-            _.map(this.middlewares, (middleware) => {
-                app.use(middleware);
-            });
+                    res.success = function(data = {}, guard = [], allows = []) {
+                        if (data) {
+                            guard = [
+                                ...guard,
+                                '__v',
+                                '_id',
+                                'deleted_at',
+                                'updated_at',
+                                'created_id',
+                                'modified_id'
+                            ];
 
-            const msg = [];
-            _.map(this.controllers, (obj) => {
-                const controller = obj.controller;
-                _.map(controller, (item, key) => {
-                    item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
+                            if (_.isArray(data) || data.docs) {
+                                guard = [
+                                    ...guard,
+                                    'metadata_disable',
+                                    'metadata_title',
+                                    'metadata_keywords',
+                                    'metadata_description',
+                                    'metadata_image_url',
+                                ];
+                            }
 
-                    msg.push({
-                        controller: obj.name,
-                        version: obj.version,
-                        type: item.type,
-                        method: key,
-                        path: item.path,
-                    });
+                            guard = _.difference(guard, allows);
 
-                    app[item.type.toLowerCase()](item.path, ...item.method);
+                            if (_.isArray(data)) {
+                                data = _.map(data, item => {
+                                    return omitItem(item, guard);
+                                });
+                            } else if (_.isObject(data)) {
+                                if (data.docs) {
+                                    data.docs = _.map(data.docs, item => {
+                                        return omitItem(item, guard);
+                                    });
+                                } else {
+                                    data = omitItem(data, guard);
+                                }
+                            }
+                        }
+
+                        return res.json({
+                            success: true,
+                            data,
+                            options: req.resOptions,
+                        });
+                    };
+
+                    res.cleanCookie = function(data) {
+                        _.map(data, (name) => {
+                            res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
+                        });
+                    }
+                    res.addCookie = function(data) {
+                        _.map(data, (value, key) => {
+                            res.cookie(key, value, SET_COOKIES_OPTIONS);
+                        });
+                    }
+                    next();
                 });
-            });
 
-            console.table(msg);
+                _.map(this.middlewares, (middleware) => {
+                    app.use(middleware);
+                });
 
-            app.all('/', async (req, res) => {
-                return res.success('welcome');
-            });
+                const msg = [];
+                _.map(this.controllers, (obj) => {
+                    const controller = obj.controller;
+                    _.map(controller, (item, key) => {
+                        item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
 
-            app.use((req, res) => {
-                throw new ErrorException(NOT_FOUND);
-            });
+                        msg.push({
+                            controller: obj.name,
+                            version: obj.version,
+                            type: item.type,
+                            method: key,
+                            path: item.path,
+                        });
 
-            app.use((e, req, res, next) => {
-                const error = errorCatch(e);
+                        app[item.type.toLowerCase()](item.path, ...item.method);
+                    });
+                });
 
-                if (error.errors[0].code === UNKNOWN) {
-                    console.error(req.originalUrl, e);
-                }
+                console.table(msg);
 
-                if (this.callbackError) {
-                    this.callbackError(error);
-                }
+                app.all('/', async (req, res) => {
+                    return res.success('welcome');
+                });
 
-                return res.status(error.status).json({ success: false, errors: error.errors });
-            });
+                app.use((req, res) => {
+                    throw new ErrorException(NOT_FOUND);
+                });
 
-            const server = http.Server(app);
+                app.use((e, req, res, next) => {
+                    const error = errorCatch(e);
 
-            server.on('listening', () => {
-                this._alert('listening', `Server start at http://localhost:${server.address().port}`);
-            });
+                    if (error.errors[0].code === UNKNOWN) {
+                        console.error(req.originalUrl, e);
+                    }
 
-            server.on('error', (error) => {
-                if (error.syscall !== 'listen') {
-                    throw error;
-                }
+                    if (this.callbackError) {
+                        this.callbackError(error);
+                    }
 
-                let bind = typeof port === 'string' ?
-                    'Pipe ' + port :
-                    'Port ' + port;
+                    return res.status(error.status).json({ success: false, errors: error.errors });
+                });
 
-                switch (error.code) {
-                    case 'EACCES':
-                        this._alert('EACCES', `${bind} requires elevated privileges`);
-                        process.exit(1);
-                        break;
-                    case 'EADDRINUSE':
-                        this._alert('EACCES', `${bind} is already in use`);
-                        process.exit(1);
-                        break;
-                    default:
+                const server = http.Server(app);
+
+                server.on('listening', () => {
+                    this._alert('listening', `Server start at http://localhost:${server.address().port}`);
+                });
+
+                server.on('error', (error) => {
+                    if (error.syscall !== 'listen') {
                         throw error;
-                }
-            });
+                    }
 
-            server.listen(port);
+                    let bind = typeof port === 'string' ?
+                        'Pipe ' + port :
+                        'Port ' + port;
 
-            return server;
+                    switch (error.code) {
+                        case 'EACCES':
+                            this._alert('EACCES', `${bind} requires elevated privileges`);
+                            process.exit(1);
+                            break;
+                        case 'EADDRINUSE':
+                            this._alert('EACCES', `${bind} is already in use`);
+                            process.exit(1);
+                            break;
+                        default:
+                            throw error;
+                    }
+                });
 
-        } else {
-            throw Error('No controllers in use');
+                server.listen(port);
+
+                return server;
+
+            } else {
+                throw Error('No controllers in use');
+            }
+            return null;
         }
-        return null;
-    }
 
-    setAlertCallback(callback) {
-        this.alertCallback = callback;
-        return this;
-    }
+        setAlertCallback(callback) {
+            this.alertCallback = callback;
+            return this;
+        }
 
-    _alert(status, msg) {
-        if (typeof this.alertCallback === 'function') {
-            this.alertCallback(status, msg);
-        } else {
-            console.log(status, msg);
+        _alert(status, msg) {
+            if (typeof this.alertCallback === 'function') {
+                this.alertCallback(status, msg);
+            } else {
+                console.log(status, msg);
+            }
         }
     }
-}
 
-export default ApiServer;
+    export default ApiServer;
