@@ -29,7 +29,7 @@ function omitItem(item, guard) {
 class ApiServer {
     constructor(currentDir = '', options = {}) {
         this.options = options;
-        
+
         this.middlewares = [];
         this.controllers = [];
         this.whiteList = [];
@@ -108,27 +108,29 @@ class ApiServer {
 
             app.use(cookieParser(process.env.SECRET_KEY));
 
-
-            app.use(cors({
-                credentials: true,
-                origin: function(origin, callback) {
-                    if (
-                        !origin || !WHITE_LIST.length ||
-                        WHITE_LIST.some(re => origin.endsWith(re))) {
-                        callback(null, true)
-                    } else {
-                        callback(new Error(`${origin} Not allowed by CORS`));
-                    }
-                },
-            }));
+            if (!WHITE_LIST.length) {
+                app.use(function(req, res, next) {
+                    res.header("Access-Control-Allow-Origin", "*");
+                    next();
+                });
+            } else {
+                app.use(cors({
+                    credentials: true,
+                    origin: function(origin, callback) {
+                        if (
+                            !origin ||
+                            WHITE_LIST.some(re => origin.endsWith(re))) {
+                            callback(null, true)
+                        } else {
+                            callback(new Error(`${origin} Not allowed by CORS`));
+                        }
+                    },
+                }));
+            }
 
             if (this.debug) {
                 app.use(morgan('dev'));
             }
-
-
-
-
 
             app.get('/robots.txt', function(req, res) {
                 res.type('text/plain');
