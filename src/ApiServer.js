@@ -113,202 +113,202 @@ class ApiServer {
                         credentials: true,
                         origin: true
                     });
-                }
-                else {
-                    app.use(cors({
-                        credentials: true,
-                        origin: function(origin, callback) {
-                            if (
-                                !origin ||
-                                WHITE_LIST.some(re => origin.endsWith(re))) {
-                                callback(null, true)
-                            } else {
-                                callback(new Error(`${origin} Not allowed by CORS`));
-                            }
-                        },
-                    }));
-                }
-
-                if (this.debug) {
-                    app.use(morgan('dev'));
-                }
-
-                app.get('/robots.txt', function(req, res) {
-                    res.type('text/plain');
-                    res.send('User-agent: *\nDisallow: /');
                 });
-                app.get('/favicon.ico', (req, res) => res.status(204).json({}));
+            else {
+                app.use(cors({
+                    credentials: true,
+                    origin: function(origin, callback) {
+                        if (
+                            !origin ||
+                            WHITE_LIST.some(re => origin.endsWith(re))) {
+                            callback(null, true)
+                        } else {
+                            callback(new Error(`${origin} Not allowed by CORS`));
+                        }
+                    },
+                }));
+            }
 
-                app.use(async function(req, res, next) {
-                    req.trackDevice = {
-                        ip: req.ip,
-                        device: req.get('X-DEVICE') || req.get('User-Agent'),
-                        device_id: req.get('X-DEVICE-ID') || 'web',
-                        os: req.get('X-OS') || 'web',
-                    }
+            if (this.debug) {
+                app.use(morgan('dev'));
+            }
+
+            app.get('/robots.txt', function(req, res) {
+                res.type('text/plain');
+                res.send('User-agent: *\nDisallow: /');
+            });
+            app.get('/favicon.ico', (req, res) => res.status(204).json({}));
+
+            app.use(async function(req, res, next) {
+                req.trackDevice = {
+                    ip: req.ip,
+                    device: req.get('X-DEVICE') || req.get('User-Agent'),
+                    device_id: req.get('X-DEVICE-ID') || 'web',
+                    os: req.get('X-OS') || 'web',
+                }
 
 
-                    res.error = function(code, errors = []) {
-                        throw new ErrorException(code, errors);
-                    }
+                res.error = function(code, errors = []) {
+                    throw new ErrorException(code, errors);
+                }
 
-                    res.success = function(data = {}, guard = [], allows = []) {
-                        if (data) {
+                res.success = function(data = {}, guard = [], allows = []) {
+                    if (data) {
+                        guard = [
+                            ...guard,
+                            '__v',
+                            '_id',
+                            'deleted_at',
+                            'updated_at',
+                            'created_id',
+                            'modified_id'
+                        ];
+
+                        if (_.isArray(data) || data.docs) {
                             guard = [
                                 ...guard,
-                                '__v',
-                                '_id',
-                                'deleted_at',
-                                'updated_at',
-                                'created_id',
-                                'modified_id'
+                                'metadata_disable',
+                                'metadata_title',
+                                'metadata_keywords',
+                                'metadata_description',
+                                'metadata_image_url',
                             ];
-
-                            if (_.isArray(data) || data.docs) {
-                                guard = [
-                                    ...guard,
-                                    'metadata_disable',
-                                    'metadata_title',
-                                    'metadata_keywords',
-                                    'metadata_description',
-                                    'metadata_image_url',
-                                ];
-                            }
-
-                            guard = _.difference(guard, allows);
-
-                            if (_.isArray(data)) {
-                                data = _.map(data, item => {
-                                    return omitItem(item, guard);
-                                });
-                            } else if (_.isObject(data)) {
-                                if (data.docs) {
-                                    data.docs = _.map(data.docs, item => {
-                                        return omitItem(item, guard);
-                                    });
-                                } else {
-                                    data = omitItem(data, guard);
-                                }
-                            }
                         }
 
-                        return res.json({
-                            success: true,
-                            data,
-                            options: req.resOptions,
-                        });
-                    };
+                        guard = _.difference(guard, allows);
 
-                    res.cleanCookie = function(data) {
-                        _.map(data, (name) => {
-                            res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
-                        });
+                        if (_.isArray(data)) {
+                            data = _.map(data, item => {
+                                return omitItem(item, guard);
+                            });
+                        } else if (_.isObject(data)) {
+                            if (data.docs) {
+                                data.docs = _.map(data.docs, item => {
+                                    return omitItem(item, guard);
+                                });
+                            } else {
+                                data = omitItem(data, guard);
+                            }
+                        }
                     }
-                    res.addCookie = function(data) {
-                        _.map(data, (value, key) => {
-                            res.cookie(key, value, SET_COOKIES_OPTIONS);
-                        });
-                    }
-                    next();
-                });
 
-                _.map(this.middlewares, (middleware) => {
-                    app.use(middleware);
-                });
-
-                const msg = [];
-                _.map(this.controllers, (obj) => {
-                    const controller = obj.controller;
-                    _.map(controller, (item, key) => {
-                        item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
-
-                        msg.push({
-                            controller: obj.name,
-                            version: obj.version,
-                            type: item.type,
-                            method: key,
-                            path: item.path,
-                        });
-
-                        app[item.type.toLowerCase()](item.path, ...item.method);
+                    return res.json({
+                        success: true,
+                        data,
+                        options: req.resOptions,
                     });
+                };
+
+                res.cleanCookie = function(data) {
+                    _.map(data, (name) => {
+                        res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
+                    });
+                }
+                res.addCookie = function(data) {
+                    _.map(data, (value, key) => {
+                        res.cookie(key, value, SET_COOKIES_OPTIONS);
+                    });
+                }
+                next();
+            });
+
+            _.map(this.middlewares, (middleware) => {
+                app.use(middleware);
+            });
+
+            const msg = [];
+            _.map(this.controllers, (obj) => {
+                const controller = obj.controller;
+                _.map(controller, (item, key) => {
+                    item.path = obj.version.startsWith('v') ? `/${obj.version}${item.path}` : item.path;
+
+                    msg.push({
+                        controller: obj.name,
+                        version: obj.version,
+                        type: item.type,
+                        method: key,
+                        path: item.path,
+                    });
+
+                    app[item.type.toLowerCase()](item.path, ...item.method);
                 });
+            });
 
-                console.table(msg);
+            console.table(msg);
 
-                app.all('/', async (req, res) => {
-                    return res.success('welcome');
-                });
+            app.all('/', async (req, res) => {
+                return res.success('welcome');
+            });
 
-                app.use((req, res) => {
-                    throw new ErrorException(NOT_FOUND);
-                });
+            app.use((req, res) => {
+                throw new ErrorException(NOT_FOUND);
+            });
 
-                app.use((e, req, res, next) => {
-                    const error = errorCatch(e);
+            app.use((e, req, res, next) => {
+                const error = errorCatch(e);
 
-                    if (error.errors[0].code === UNKNOWN) {
-                        console.error(req.originalUrl, e);
-                    }
+                if (error.errors[0].code === UNKNOWN) {
+                    console.error(req.originalUrl, e);
+                }
 
-                    if (this.callbackError) {
-                        this.callbackError(error);
-                    }
+                if (this.callbackError) {
+                    this.callbackError(error);
+                }
 
-                    return res.status(error.status).json({ success: false, errors: error.errors });
-                });
+                return res.status(error.status).json({ success: false, errors: error.errors });
+            });
 
-                const server = http.Server(app);
+            const server = http.Server(app);
 
-                server.on('listening', () => {
-                    this._alert('listening', `Server start at http://localhost:${server.address().port}`);
-                });
+            server.on('listening', () => {
+                this._alert('listening', `Server start at http://localhost:${server.address().port}`);
+            });
 
-                server.on('error', (error) => {
-                    if (error.syscall !== 'listen') {
+            server.on('error', (error) => {
+                if (error.syscall !== 'listen') {
+                    throw error;
+                }
+
+                let bind = typeof port === 'string' ?
+                    'Pipe ' + port :
+                    'Port ' + port;
+
+                switch (error.code) {
+                    case 'EACCES':
+                        this._alert('EACCES', `${bind} requires elevated privileges`);
+                        process.exit(1);
+                        break;
+                    case 'EADDRINUSE':
+                        this._alert('EACCES', `${bind} is already in use`);
+                        process.exit(1);
+                        break;
+                    default:
                         throw error;
-                    }
+                }
+            });
 
-                    let bind = typeof port === 'string' ?
-                        'Pipe ' + port :
-                        'Port ' + port;
+            server.listen(port);
 
-                    switch (error.code) {
-                        case 'EACCES':
-                            this._alert('EACCES', `${bind} requires elevated privileges`);
-                            process.exit(1);
-                            break;
-                        case 'EADDRINUSE':
-                            this._alert('EACCES', `${bind} is already in use`);
-                            process.exit(1);
-                            break;
-                        default:
-                            throw error;
-                    }
-                });
+            return server;
 
-                server.listen(port);
-
-                return server;
-
-            } else {
-                throw Error('No controllers in use');
-            }
-            return null;
+        } else {
+            throw Error('No controllers in use');
         }
-
-        setAlertCallback(callback) {
-            this.alertCallback = callback;
-            return this;
-        }
-
-        _alert(status, msg) {
-            if (typeof this.alertCallback === 'function') {
-                this.alertCallback(status, msg);
-            } else {
-                console.log(status, msg);
-            }
-        }
+        return null;
     }
 
-    export default ApiServer;
+    setAlertCallback(callback) {
+        this.alertCallback = callback;
+        return this;
+    }
+
+    _alert(status, msg) {
+        if (typeof this.alertCallback === 'function') {
+            this.alertCallback(status, msg);
+        } else {
+            console.log(status, msg);
+        }
+    }
+}
+
+export default ApiServer;
