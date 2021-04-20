@@ -1,6 +1,6 @@
 {
     "name": "@azteam/express",
-    "version": "1.2.80",
+    "version": "1.2.81",
     "description": "",
     "main": "src/index.js",
     "repository": {
