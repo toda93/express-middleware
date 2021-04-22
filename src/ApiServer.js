@@ -199,10 +199,11 @@ class ApiServer {
                 }
                 res.addCookie = function(data) {
                     _.map(data, (value, key) => {
-                        const cookieTTL = 86400000 * 365; // 1 year
+                        const maxAge = 86400000 * 365; // 1 year
                         res.cookie(key, value, {
                             ...SET_COOKIES_OPTIONS,
-                            expires: new Date(Date.now() + cookieTTL)
+                            maxAge,
+                            expires: new Date(Date.now() + maxAge)
                         });
                     });
                 }

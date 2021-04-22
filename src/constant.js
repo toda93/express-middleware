@@ -18,7 +18,6 @@ export const SET_COOKIES_OPTIONS = {
     sameSite: 'Lax',
     httpOnly: true,
     signed: true,
-    maxAge: 86400000 * 365 // 1 year
 };
 
 export const CLEAR_COOKIES_OPTIONS = {
