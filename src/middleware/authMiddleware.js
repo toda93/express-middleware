@@ -11,9 +11,6 @@ function systemLogin(userData = null) {
     return user;
 }
 
-const cookie = new Cookies();
-
-
 export default function(cbRefreshToken, cbLoginAPI) {
     return async function(req, res, next) {
 
