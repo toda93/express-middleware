@@ -18,11 +18,10 @@ function systemLogin(userData = null) {
 const cookie = new Cookies();
 
 
-export default function(cb_refresh_token, cb_login_api) {
+export default function(cbRefreshToken, cbLoginAPI) {
     return async function(req, res, next) {
 
         const { headers, signedCookies } = req;
-
 
         if (headers['x-app-secret'] === process.env.SECRET_KEY) {
             req.user = systemLogin(headers['x-app-user']);
@@ -35,27 +34,26 @@ export default function(cb_refresh_token, cb_login_api) {
 
             if (token) {
                 token = token.replace('Bearer ', '');
-                return jwt.verify(token, process.env.SECRET_KEY, async (error, jwt_data) => {
+                return jwt.verify(token, process.env.SECRET_KEY, async (error, jwtData) => {
                     if (error) {
                         try {
                             let data = null;
                             if (error.name === 'TokenExpiredError') {
                                 if (signedCookies.refresh_token) {
-                                    data = await cb_refresh_token(signedCookies.refresh_token);
+                                    data = await cbRefreshToken(signedCookies.refresh_token);
                                 } else if (signedCookies.api_key) {
-                                    data = await cb_login_api(signedCookies.api_key);
+                                    data = await cbLoginAPI(signedCookies.api_key);
                                 }
                             } else if (error.name === 'JsonWebTokenError') {
-                                data = await cb_login_api(token);
+                                data = await cbLoginAPI(token);
                             }
-
                             if (data) {
-                                jwt_data = jwt.decode(data.access_token);
+                                jwtData = jwt.decode(data.access_token);
                             }
                         } catch (e) {}
                     }
-                    if (jwt_data) {
-                        req.user = jwt_data;
+                    if (jwtData) {
+                        req.user = jwtData;
                     } else {
                         cookie.remove('access_token', CLEAR_COOKIES_OPTIONS);
                         cookie.remove('refresh_token', CLEAR_COOKIES_OPTIONS);

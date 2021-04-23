@@ -13,7 +13,7 @@ export const REQUEST_TYPE = {
 }
 
 export const SET_COOKIES_OPTIONS = {
-    domain: process.env.DOMAIN,
+    domain: `.${process.env.DOMAIN}`,
     secure: process.env.NODE_ENV !== 'development',
     sameSite: 'Lax',
     httpOnly: true,
