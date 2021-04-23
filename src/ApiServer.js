@@ -12,8 +12,6 @@ import 'express-async-errors';
 import { decryptAES, encryptAES } from '@azteam/crypto';
 import { errorCatch, ErrorException, NOT_FOUND, UNKNOWN } from '@azteam/error';
 
-import { SET_COOKIES_OPTIONS, CLEAR_COOKIES_OPTIONS } from './constant';
-
 function omitItem(item, guard) {
     if (item.toJSON) {
         item = item.toJSON();
@@ -24,12 +22,18 @@ function omitItem(item, guard) {
     return item;
 }
 
-
-
 class ApiServer {
     constructor(currentDir = '', options = {}) {
         this.options = options;
-        
+
+
+        this.cookieOptions = {
+            secure: process.env.NODE_ENV !== 'development',
+            httpOnly: true,
+            signed: true,
+            sameSite: 'Lax'
+        }
+
         this.middlewares = [];
         this.controllers = [];
         this.whiteList = [];
@@ -40,6 +44,10 @@ class ApiServer {
 
     }
 
+    setCookieOptions(cookieOptions) {
+        this.cookieOptions = cookieOptions;
+        return this;
+    }
 
     setCallbackError(callback = null) {
         this.callbackError = callback;
@@ -194,14 +202,16 @@ class ApiServer {
 
                 res.cleanCookie = function(data) {
                     _.map(data, (name) => {
-                        res.clearCookie(name, CLEAR_COOKIES_OPTIONS);
+                        res.clearCookie(name, {
+                            domain: this.cookieOptions.domain
+                        });
                     });
                 }
                 res.addCookie = function(data) {
                     _.map(data, (value, key) => {
                         const maxAge = 86400000 * 365; // 1 year
                         res.cookie(key, value, {
-                            ...SET_COOKIES_OPTIONS,
+                            ...this.cookieOptions,
                             maxAge,
                             expires: new Date(Date.now() + maxAge)
                         });

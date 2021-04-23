@@ -1,9 +1,5 @@
 import { ErrorException } from '@azteam/error';
 import jwt from 'jsonwebtoken';
-import Cookies from 'universal-cookie';
-
-import { CLEAR_COOKIES_OPTIONS } from '../constant';
-
 
 function systemLogin(userData = null) {
     let user = {};
@@ -54,10 +50,7 @@ export default function(cbRefreshToken, cbLoginAPI) {
                     }
                     if (jwtData) {
                         req.user = jwtData;
-                    } else {
-                        cookie.remove('access_token', CLEAR_COOKIES_OPTIONS);
-                        cookie.remove('refresh_token', CLEAR_COOKIES_OPTIONS);
-                    }
+                    } 
                     return next();
                 });
             }

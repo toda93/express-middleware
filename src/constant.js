@@ -11,15 +11,3 @@ export const REQUEST_TYPE = {
     BODY: 'body',
     QUERY: 'query',
 }
-
-export const SET_COOKIES_OPTIONS = {
-    domain: process.env.DOMAIN ? `.${process.env.DOMAIN}` : null,
-    secure: process.env.NODE_ENV !== 'development',
-    sameSite: process.env.DOMAIN ? 'Lax' : 'None',
-    httpOnly: true,
-    signed: true,
-};
-
-export const CLEAR_COOKIES_OPTIONS = {
-    domain: `.${process.env.DOMAIN}`,
-};
