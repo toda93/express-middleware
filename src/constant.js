@@ -13,9 +13,9 @@ export const REQUEST_TYPE = {
 }
 
 export const SET_COOKIES_OPTIONS = {
-    domain: `.${process.env.DOMAIN}`,
+    domain: process.env.DOMAIN ? `.${process.env.DOMAIN}` : null,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'Lax',
+    sameSite: process.env.DOMAIN ? 'Lax' : 'None',
     httpOnly: true,
     signed: true,
 };
