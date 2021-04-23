@@ -45,7 +45,10 @@ class ApiServer {
     }
 
     setCookieOptions(cookieOptions) {
-        this.cookieOptions = cookieOptions;
+        this.cookieOptions = {
+            ...this.cookieOptions,
+            ...cookieOptions
+        };
         return this;
     }
 
