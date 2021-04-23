@@ -28,6 +28,8 @@ class ApiServer {
 
 
         this.cookieOptions = {
+            domain: null,
+            path: '/',
             secure: process.env.NODE_ENV !== 'development',
             httpOnly: true,
             signed: true,
