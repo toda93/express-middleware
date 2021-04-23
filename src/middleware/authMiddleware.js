@@ -42,12 +42,16 @@ export default function(cbRefreshToken, cbLoginAPI) {
                             }
                             if (data) {
                                 jwtData = jwt.decode(data.access_token);
+
+                                res.addCookie([
+                                    'access_token', data.access_token
+                                ]);
                             }
                         } catch (e) {}
                     }
                     if (jwtData) {
                         req.user = jwtData;
-                    } 
+                    }
                     return next();
                 });
             }
