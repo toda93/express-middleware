@@ -21,5 +21,5 @@ export const SET_COOKIES_OPTIONS = {
 };
 
 export const CLEAR_COOKIES_OPTIONS = {
-    domain: process.env.DOMAIN
+    domain: `.${process.env.DOMAIN}`,
 };
