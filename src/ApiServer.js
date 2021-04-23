@@ -26,7 +26,6 @@ class ApiServer {
     constructor(currentDir = '', options = {}) {
         this.options = options;
 
-
         this.cookieOptions = {
             domain: null,
             path: '/',
@@ -106,6 +105,7 @@ class ApiServer {
         if (!_.isEmpty(this.controllers)) {
 
             const WHITE_LIST = this.whiteList;
+            const COOKIE_OPTIONS = this.cookieOptions;
 
 
             const app = express();
@@ -208,15 +208,16 @@ class ApiServer {
                 res.cleanCookie = function(data) {
                     _.map(data, (name) => {
                         res.clearCookie(name, {
-                            domain: this.cookieOptions.domain
+                            domain: COOKIE_OPTIONS.domain
                         });
                     });
                 }
+
                 res.addCookie = function(data) {
                     _.map(data, (value, key) => {
                         const maxAge = 86400000 * 365; // 1 year
                         res.cookie(key, value, {
-                            ...this.cookieOptions,
+                            ...COOKIE_OPTIONS,
                             maxAge,
                             expires: new Date(Date.now() + maxAge)
                         });
