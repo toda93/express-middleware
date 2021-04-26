@@ -7,15 +7,13 @@ const v = new Validator({
         jsonString: "The '{field}' field must be an json string! Actual: {actual}"
     }
 });
+
 v.add("json", function({ schema, messages }, path, context) {
     try {
         JSON.parse(string);
     } catch (e) {
         return false;
     }
-
-    return true;
-
     return {
         source: `
             try {
