@@ -9,15 +9,10 @@ const v = new Validator({
 });
 
 v.add("json", function({ schema, messages }, path, context) {
-    try {
-        JSON.parse(string);
-    } catch (e) {
-        return false;
-    }
     return {
         source: `
             try {
-                JSON.parse(string);
+                JSON.parse(value);
             } catch (e) {
                 ${this.makeError({ type: "jsonString",  actual: "value", messages })}
             }
