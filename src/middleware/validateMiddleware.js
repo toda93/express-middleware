@@ -15,6 +15,7 @@ v.add("json", function({ schema, messages }, path, context) {
                 JSON.parse(value);
             } catch (e) {
                 ${this.makeError({ type: "jsonString",  actual: "value", messages })}
+                return;
             }
             return value; 
         `
