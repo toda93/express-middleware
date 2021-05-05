@@ -1,6 +1,6 @@
 {
     "name": "@azteam/express",
-    "version": "1.2.100",
+    "version": "1.2.101",
     "description": "",
     "main": "src/index.js",
     "repository": {
@@ -39,7 +39,7 @@
         "jsonwebtoken": "8.2.1",
         "method-override": "3.0.0",
         "morgan": "1.10.0",
-        "socket.io": "3.0.4",
+        "socket.io": "3.0.5",
         "socket.io-redis": "6.0.1"
     }
 }
