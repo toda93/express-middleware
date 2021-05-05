@@ -42,10 +42,10 @@ export default function(cbRefreshToken, cbLoginAPI) {
                             }
                             if (data) {
                                 jwtData = jwt.decode(data.access_token);
-
                                 res.addCookie({
                                     'access_token': data.access_token
                                 });
+                                res.set('Auth-Token', data.access_token);
                             }
                         } catch (e) {}
                     }
