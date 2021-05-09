@@ -174,7 +174,6 @@ class ApiServer {
                             guard = [
                                 ...guard,
                                 'metadata_disable',
-                                'metadata_title',
                                 'metadata_keywords',
                                 'metadata_description',
                                 'metadata_image_url',
